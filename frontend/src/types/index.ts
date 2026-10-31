@@ -74,6 +74,7 @@ export interface Reservation {
   created_at: string;
   guest?: GuestProfile;
   room?: Room;
+  bill?: Bill;
 }
 
 export interface Stay {
@@ -92,6 +93,7 @@ export interface Stay {
   reservation?: Reservation;
   guest?: GuestProfile;
   room?: Room;
+  bill?: Bill;
 }
 
 export interface MenuItem {
@@ -238,6 +240,7 @@ export interface Bill {
   created_at: string;
   finalized_at?: string;
   guest?: GuestProfile;
+  stay?: Stay;
   line_items: BillLineItem[];
   payments: Payment[];
 }
@@ -277,6 +280,7 @@ export interface ServiceRequest {
   resolved_at?: string;
   guest?: GuestProfile;
   room?: Room;
+  bill?: Bill;
 }
 
 export interface GuestFeedback {
@@ -287,6 +291,15 @@ export interface GuestFeedback {
   comments?: string;
   created_at: string;
   guest?: GuestProfile;
+}
+
+export interface RecentActivity {
+  id: number;
+  type: string;
+  title: string;
+  description: string;
+  timestamp: string;
+  badge_color?: string;
 }
 
 export interface DashboardStats {
@@ -308,4 +321,8 @@ export interface DashboardStats {
   total_billed_revenue: string | number;
   total_collected_payments: string | number;
   total_outstanding_balance: string | number;
+  total_revenue?: string | number;
+  total_room_revenue?: string | number;
+  total_restaurant_revenue?: string | number;
+  total_bar_revenue?: string | number;
 }

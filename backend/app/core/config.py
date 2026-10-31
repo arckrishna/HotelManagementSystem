@@ -5,10 +5,10 @@ class Settings:
     VERSION: str = "1.0.0"
     API_V1_STR: str = "/api"
     
-    # Database URL
+    # Database URL: Defaults to local zero-config SQLite, or PostgreSQL via env var
     DATABASE_URL: str = os.getenv(
         "DATABASE_URL", 
-        "postgresql+psycopg://postgres:password@localhost:5432/staysync_db"
+        "sqlite:///./staysync.db"
     )
     
     # JWT Settings
