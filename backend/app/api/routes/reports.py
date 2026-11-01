@@ -19,10 +19,20 @@ from app.api.deps import require_roles
 
 router = APIRouter(prefix="/reports", tags=["Reports & Dashboards"])
 
+STAFF_ROLES = [
+    UserRole.ADMIN,
+    UserRole.ACCOUNTANT,
+    UserRole.RECEPTIONIST,
+    UserRole.INVENTORY_MANAGER,
+    UserRole.MAINTENANCE_STAFF,
+    UserRole.RESTAURANT_STAFF,
+    UserRole.BAR_STAFF,
+]
+
 @router.get("/dashboard", response_model=DashboardStats)
 def get_dashboard_kpis(
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles([UserRole.ADMIN, UserRole.ACCOUNTANT, UserRole.RECEPTIONIST]))
+    current_user: User = Depends(require_roles(STAFF_ROLES))
 ):
     today = date.today()
 
@@ -81,6 +91,12 @@ def get_dashboard_kpis(
         Bill.status.in_([BillStatus.OPEN, BillStatus.FINALIZED])
     ).scalar() or Decimal("0.00")
 
+    # F&B Revenue Breakdown
+    rest_orders = db.query(Order).filter(Order.status != OrderStatus.CANCELLED).all()
+    rest_rev = sum((o.total_amount for o in rest_orders if o.department == DepartmentType.RESTAURANT), Decimal("0.00"))
+    bar_rev = sum((o.total_amount for o in rest_orders if o.department == DepartmentType.BAR), Decimal("0.00"))
+    room_rev = max(Decimal("0.00"), billed_revenue - (rest_rev + bar_rev))
+
     return DashboardStats(
         total_rooms=total_rooms,
         available_rooms=available,
@@ -99,13 +115,17 @@ def get_dashboard_kpis(
         low_stock_items_count=low_stock_count,
         total_billed_revenue=billed_revenue,
         total_collected_payments=collected_payments,
-        total_outstanding_balance=outstanding
+        total_outstanding_balance=outstanding,
+        total_revenue=billed_revenue,
+        total_room_revenue=room_rev,
+        total_restaurant_revenue=rest_rev,
+        total_bar_revenue=bar_rev
     )
 
 @router.get("/recent-activities", response_model=list[RecentActivity])
 def get_recent_activities(
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles([UserRole.ADMIN, UserRole.RECEPTIONIST, UserRole.ACCOUNTANT]))
+    current_user: User = Depends(require_roles(STAFF_ROLES))
 ):
     logs = db.query(AuditLog).order_by(AuditLog.id.desc()).limit(15).all()
     result = []
@@ -133,7 +153,7 @@ def get_recent_activities(
 @router.get("/sales")
 def get_sales_report(
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles([UserRole.ADMIN, UserRole.ACCOUNTANT, UserRole.RESTAURANT_STAFF, UserRole.BAR_STAFF]))
+    current_user: User = Depends(require_roles(STAFF_ROLES))
 ):
     orders = db.query(Order).filter(Order.status != OrderStatus.CANCELLED).all()
     restaurant_sales = sum((o.total_amount for o in orders if o.department == DepartmentType.RESTAURANT), Decimal("0.00"))
@@ -155,7 +175,7 @@ def get_sales_report(
 @router.get("/occupancy")
 def get_occupancy_report(
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles([UserRole.ADMIN, UserRole.RECEPTIONIST]))
+    current_user: User = Depends(require_roles(STAFF_ROLES))
 ):
     rooms = db.query(Room).all()
     by_category = {}

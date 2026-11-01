@@ -30,6 +30,10 @@ class DashboardStats(BaseModel):
     total_billed_revenue: Decimal
     total_collected_payments: Decimal
     total_outstanding_balance: Decimal
+    total_revenue: Decimal | None = None
+    total_room_revenue: Decimal | None = None
+    total_restaurant_revenue: Decimal | None = None
+    total_bar_revenue: Decimal | None = None
 
 class RecentActivity(BaseModel):
     id: int
