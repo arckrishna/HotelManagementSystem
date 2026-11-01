@@ -77,6 +77,8 @@ export const reservationsApi = {
 
 export const staysApi = {
   getActiveStays: () => apiClient.get('/stays/active'),
+  getMyStay: () => apiClient.get('/stays/my'),
+  activateDemoStay: () => apiClient.post('/stays/demo-checkin'),
   getStay: (id: number) => apiClient.get(`/stays/${id}`),
   checkIn: (data: { reservation_id: number; initial_room_condition_notes?: string }) => 
     apiClient.post('/stays/check-in', data),
@@ -162,6 +164,20 @@ export const reportsApi = {
   getSalesReport: () => apiClient.get('/reports/sales'),
   getOccupancyReport: () => apiClient.get('/reports/occupancy'),
   getExportUrl: (reportType: string) => `${API_BASE_URL}/reports/export?report_type=${reportType}`,
+  downloadReport: async (reportType: string) => {
+    const response = await apiClient.get(`/reports/export?report_type=${reportType}`, {
+      responseType: 'blob'
+    });
+    const blob = new Blob([response.data], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `staysync_${reportType}_report.csv`);
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode?.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  }
 };
 
 export const usersApi = {

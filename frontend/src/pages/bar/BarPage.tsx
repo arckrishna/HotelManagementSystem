@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useToast } from '../../context/ToastContext';
 import { Wine, Plus, CheckCircle, AlertCircle, GlassWater, Clock } from 'lucide-react';
 import { barApi, staysApi } from '../../api/client';
 import { MenuItem, Order, Stay, OrderStatus } from '../../types';
@@ -6,6 +7,7 @@ import { Badge } from '../../components/Badge';
 import { Modal } from '../../components/Modal';
 
 export const BarPage: React.FC = () => {
+  const { toast } = useToast();
   const [orders, setOrders] = useState<Order[]>([]);
   const [menu, setMenu] = useState<MenuItem[]>([]);
   const [activeStays, setActiveStays] = useState<Stay[]>([]);
@@ -49,7 +51,7 @@ export const BarPage: React.FC = () => {
       await barApi.toggleAvailability(id, !current);
       setMenu(prev => prev.map(m => m.id === id ? { ...m, is_available: !current } : m));
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to update beverage availability.');
+      toast.error(err.response?.data?.detail || 'Failed to update beverage availability.');
     }
   };
 
@@ -58,7 +60,7 @@ export const BarPage: React.FC = () => {
       const res = await barApi.updateOrderStatus(orderId, newStatus);
       setOrders(prev => prev.map(o => o.id === orderId ? res.data : o));
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to update beverage order status.');
+      toast.error(err.response?.data?.detail || 'Failed to update beverage order status.');
     }
   };
 

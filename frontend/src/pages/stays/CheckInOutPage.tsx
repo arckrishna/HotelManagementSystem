@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useToast } from '../../context/ToastContext';
 import { 
   LogIn, LogOut, CheckCircle2, BedDouble, 
   Receipt, CreditCard, AlertCircle, FileText, Printer 
@@ -9,6 +10,7 @@ import { Badge } from '../../components/Badge';
 import { Modal } from '../../components/Modal';
 
 export const CheckInOutPage: React.FC = () => {
+  const { toast } = useToast();
   const [activeStays, setActiveStays] = useState<Stay[]>([]);
   const [confirmedReservations, setConfirmedReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -112,7 +114,7 @@ export const CheckInOutPage: React.FC = () => {
       setFinalBillModal(res.data);
       loadData();
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Checkout failed.');
+      toast.error(err.response?.data?.detail || 'Checkout failed.');
     } finally {
       setIsCheckingOut(false);
     }

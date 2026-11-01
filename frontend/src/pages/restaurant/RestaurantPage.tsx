@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useToast } from '../../context/ToastContext';
 import { 
   UtensilsCrossed, Plus, Clock, CheckCircle2, 
   AlertCircle, ChefHat, ToggleLeft, ToggleRight, BedDouble, Search 
@@ -10,6 +11,7 @@ import { Modal } from '../../components/Modal';
 import { useAuth } from '../../context/AuthContext';
 
 export const RestaurantPage: React.FC = () => {
+  const { toast } = useToast();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'orders' | 'menu' | 'tables'>('orders');
   const [orders, setOrders] = useState<Order[]>([]);
@@ -60,7 +62,7 @@ export const RestaurantPage: React.FC = () => {
       await restaurantApi.toggleAvailability(id, !current);
       setMenu(prev => prev.map(m => m.id === id ? { ...m, is_available: !current } : m));
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to update item availability.');
+      toast.error(err.response?.data?.detail || 'Failed to update item availability.');
     }
   };
 
@@ -69,7 +71,7 @@ export const RestaurantPage: React.FC = () => {
       const res = await restaurantApi.updateOrderStatus(orderId, newStatus);
       setOrders(prev => prev.map(o => o.id === orderId ? res.data : o));
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to update order status.');
+      toast.error(err.response?.data?.detail || 'Failed to update order status.');
     }
   };
 

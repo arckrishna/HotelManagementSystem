@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useToast } from '../../context/ToastContext';
 import { 
   UserCheck, Plus, Search, Shield, Phone, Mail, 
   KeyRound, Power, CheckCircle, AlertCircle, Edit, Trash2 
@@ -10,6 +11,7 @@ import { Modal } from '../../components/Modal';
 import { useAuth } from '../../context/AuthContext';
 
 export const StaffPage: React.FC = () => {
+  const { toast } = useToast();
   const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -73,7 +75,7 @@ export const StaffPage: React.FC = () => {
       setPhone('');
       loadUsers();
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to create staff account.');
+      toast.error(err.response?.data?.detail || 'Failed to create staff account.');
     }
   };
 
@@ -93,7 +95,7 @@ export const StaffPage: React.FC = () => {
       setNewPassword('');
       loadUsers();
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to update staff member.');
+      toast.error(err.response?.data?.detail || 'Failed to update staff member.');
     }
   };
 
@@ -103,7 +105,7 @@ export const StaffPage: React.FC = () => {
       await usersApi.deleteUser(id);
       loadUsers();
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to delete staff member.');
+      toast.error(err.response?.data?.detail || 'Failed to delete staff member.');
     }
   };
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useToast } from '../../context/ToastContext';
 import { 
   Receipt, CreditCard, Search, Printer, CheckCircle2, 
   AlertCircle, IndianRupee, FileText, ChevronRight, Eye 
@@ -10,6 +11,7 @@ import { Modal } from '../../components/Modal';
 import { useAuth } from '../../context/AuthContext';
 
 export const BillingPage: React.FC = () => {
+  const { toast } = useToast();
   const { user } = useAuth();
   const [bills, setBills] = useState<Bill[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -68,7 +70,7 @@ export const BillingPage: React.FC = () => {
       setPayNotes('');
       loadData();
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to record payment.');
+      toast.error(err.response?.data?.detail || 'Failed to record payment.');
     }
   };
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useToast } from '../../context/ToastContext';
 import { 
   Boxes, Plus, AlertTriangle, ArrowUpDown, History, 
   Search, CheckCircle2, TrendingDown, ArrowUpRight, ArrowDownRight, Layers 
@@ -10,6 +11,7 @@ import { Modal } from '../../components/Modal';
 import { useAuth } from '../../context/AuthContext';
 
 export const InventoryPage: React.FC = () => {
+  const { toast } = useToast();
   const { user } = useAuth();
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [movements, setMovements] = useState<InventoryMovement[]>([]);
@@ -77,7 +79,7 @@ export const InventoryPage: React.FC = () => {
       setUnitCost('');
       loadData();
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to create inventory item.');
+      toast.error(err.response?.data?.detail || 'Failed to create inventory item.');
     }
   };
 
@@ -96,7 +98,7 @@ export const InventoryPage: React.FC = () => {
       setAdjustReason('');
       loadData();
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to adjust stock.');
+      toast.error(err.response?.data?.detail || 'Failed to adjust stock.');
     }
   };
 

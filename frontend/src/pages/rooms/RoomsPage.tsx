@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useToast } from '../../context/ToastContext';
 import { BedDouble, Plus, Filter, CheckCircle2, AlertOctagon, Sparkles, Layers, Info } from 'lucide-react';
 import { roomsApi } from '../../api/client';
 import { Room, RoomCategory, RoomStatus } from '../../types';
@@ -7,6 +8,7 @@ import { Modal } from '../../components/Modal';
 import { useAuth } from '../../context/AuthContext';
 
 export const RoomsPage: React.FC = () => {
+  const { toast } = useToast();
   const { user } = useAuth();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [categories, setCategories] = useState<RoomCategory[]>([]);
@@ -64,7 +66,7 @@ export const RoomsPage: React.FC = () => {
       setNewRoomNumber('');
       loadData();
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to add room.');
+      toast.error(err.response?.data?.detail || 'Failed to add room.');
     }
   };
 
@@ -80,7 +82,7 @@ export const RoomsPage: React.FC = () => {
       setSelectedRoom(null);
       loadData();
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to update status.');
+      toast.error(err.response?.data?.detail || 'Failed to update status.');
     }
   };
 

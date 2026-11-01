@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useToast } from '../../context/ToastContext';
 import { Users, Plus, Search, Star, Phone, Mail, FileText, CheckCircle } from 'lucide-react';
 import { guestsApi } from '../../api/client';
 import { GuestProfile } from '../../types';
@@ -6,6 +7,7 @@ import { Modal } from '../../components/Modal';
 import { Badge } from '../../components/Badge';
 
 export const GuestsPage: React.FC = () => {
+  const { toast } = useToast();
   const [guests, setGuests] = useState<GuestProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -69,7 +71,7 @@ export const GuestsPage: React.FC = () => {
       setNotes('');
       loadGuests();
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to register guest.');
+      toast.error(err.response?.data?.detail || 'Failed to register guest.');
     }
   };
 

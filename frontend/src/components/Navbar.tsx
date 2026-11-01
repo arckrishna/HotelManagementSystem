@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Bell, LogOut, User as UserIcon, Shield, CheckCircle, ChevronDown, Sparkles } from 'lucide-react';
+import { Bell, LogOut, Sparkles, ChevronDown, CheckCircle } from 'lucide-react';
 import { useAuth, DEMO_CREDENTIALS } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
 import { UserRole } from '../types';
+import { Logo } from './Logo';
 
 export const Navbar: React.FC = () => {
   const { user, logout, loginAsDemoRole } = useAuth();
@@ -32,21 +33,16 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white border-b border-slate-200/80 px-4 sm:px-6 py-3">
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-6 py-2.5 shadow-sm">
       <div className="flex items-center justify-between">
-        {/* Left: Branding & Role Title */}
-        <div className="flex items-center space-x-3">
-          <div className="flex items-center space-x-2">
-            <span className="text-xl font-black bg-gradient-to-r from-blue-700 via-indigo-600 to-sky-600 bg-clip-text text-transparent">
-              StaySync
-            </span>
-            <span className="hidden sm:inline-block text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
-              v1.0 Prototype
-            </span>
-          </div>
+        {/* Left: Branding & Property Tag */}
+        <div className="flex items-center space-x-4">
+          <Logo size="sm" theme="light" showSubtitle={false} />
 
-          <div className="hidden md:flex items-center text-xs text-slate-400 pl-3 border-l border-slate-200">
-            <span>VESIT SE Project</span>
+          <div className="hidden lg:flex items-center text-xs text-slate-500 pl-4 border-l border-slate-200 gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+            <span className="font-semibold text-slate-800 tracking-wide">StaySync Grand Resort</span>
+            <span className="text-slate-400 font-normal">• Mumbai Waterfront</span>
           </div>
         </div>
 

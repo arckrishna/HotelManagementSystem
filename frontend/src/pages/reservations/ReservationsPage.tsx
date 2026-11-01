@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useToast } from '../../context/ToastContext';
 import { CalendarCheck, Plus, Search, XCircle, CheckCircle, BedDouble, AlertCircle } from 'lucide-react';
 import { reservationsApi, guestsApi, roomsApi } from '../../api/client';
 import { Reservation, GuestProfile, Room } from '../../types';
@@ -6,6 +7,7 @@ import { Badge } from '../../components/Badge';
 import { Modal } from '../../components/Modal';
 
 export const ReservationsPage: React.FC = () => {
+  const { toast } = useToast();
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [guests, setGuests] = useState<GuestProfile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -108,7 +110,7 @@ export const ReservationsPage: React.FC = () => {
       await reservationsApi.cancelReservation(id);
       loadReservations();
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to cancel reservation.');
+      toast.error(err.response?.data?.detail || 'Failed to cancel reservation.');
     }
   };
 

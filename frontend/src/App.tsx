@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
+import { ToastProvider } from './context/ToastContext';
 import { AppLayout } from './layouts/AppLayout';
 
 // Pages
@@ -26,10 +27,10 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-900 text-white font-sans">
+      <div className="flex h-screen items-center justify-center bg-slate-950 text-white font-sans">
         <div className="text-center space-y-3">
-          <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-sm font-semibold tracking-wider text-slate-400">Loading StaySync...</p>
+          <div className="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-xs uppercase tracking-widest font-semibold text-slate-400">Authenticating StaySync...</p>
         </div>
       </div>
     );
@@ -46,41 +47,43 @@ function App() {
   return (
     <AuthProvider>
       <NotificationProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* Public Auth Route */}
-            <Route path="/login" element={<Login />} />
+        <ToastProvider>
+          <BrowserRouter>
+            <Routes>
+              {/* Public Auth Route */}
+              <Route path="/login" element={<Login />} />
 
-            {/* Protected Application Routes */}
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <AppLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<Navigate to="/dashboard" replace />} />
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="rooms" element={<RoomsPage />} />
-              <Route path="reservations" element={<ReservationsPage />} />
-              <Route path="check-in-out" element={<CheckInOutPage />} />
-              <Route path="guests" element={<GuestsPage />} />
-              <Route path="restaurant" element={<RestaurantPage />} />
-              <Route path="bar" element={<BarPage />} />
-              <Route path="maintenance" element={<MaintenancePage />} />
-              <Route path="inventory" element={<InventoryPage />} />
-              <Route path="billing" element={<BillingPage />} />
-              <Route path="reports" element={<ReportsPage />} />
-              <Route path="users" element={<StaffPage />} />
-              <Route path="audit" element={<AuditPage />} />
-              <Route path="guest-portal" element={<GuestPortalPage />} />
-            </Route>
+              {/* Protected Application Routes */}
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <AppLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<Navigate to="/dashboard" replace />} />
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="rooms" element={<RoomsPage />} />
+                <Route path="reservations" element={<ReservationsPage />} />
+                <Route path="check-in-out" element={<CheckInOutPage />} />
+                <Route path="guests" element={<GuestsPage />} />
+                <Route path="restaurant" element={<RestaurantPage />} />
+                <Route path="bar" element={<BarPage />} />
+                <Route path="maintenance" element={<MaintenancePage />} />
+                <Route path="inventory" element={<InventoryPage />} />
+                <Route path="billing" element={<BillingPage />} />
+                <Route path="reports" element={<ReportsPage />} />
+                <Route path="users" element={<StaffPage />} />
+                <Route path="audit" element={<AuditPage />} />
+                <Route path="guest-portal" element={<GuestPortalPage />} />
+              </Route>
 
-            {/* Fallback */}
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
-        </BrowserRouter>
+              {/* Fallback */}
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </ToastProvider>
       </NotificationProvider>
     </AuthProvider>
   );

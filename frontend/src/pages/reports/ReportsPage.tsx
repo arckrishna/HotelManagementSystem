@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   BarChart3, Download, Calendar, TrendingUp, BedDouble, 
-  UtensilsCrossed, Wine, Boxes, Wrench, IndianRupee, FileSpreadsheet, RefreshCw 
+  UtensilsCrossed, Wine, Boxes, Wrench, IndianRupee, FileSpreadsheet, RefreshCw, Loader2 
 } from 'lucide-react';
 import { 
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, 
@@ -9,12 +9,15 @@ import {
 } from 'recharts';
 import { reportsApi } from '../../api/client';
 import { DashboardStats } from '../../types';
+import { useToast } from '../../context/ToastContext';
 
 export const ReportsPage: React.FC = () => {
+  const { toast } = useToast();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [salesData, setSalesData] = useState<any>(null);
   const [occupancyData, setOccupancyData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [downloadingType, setDownloadingType] = useState<string | null>(null);
 
   // Date filters
   const [startDate, setStartDate] = useState(() => {
@@ -46,9 +49,18 @@ export const ReportsPage: React.FC = () => {
     loadReports();
   }, []);
 
-  const handleExport = (reportType: string) => {
-    const url = reportsApi.getExportUrl(reportType);
-    window.open(url, '_blank');
+  const handleExport = async (reportType: string) => {
+    try {
+      setDownloadingType(reportType);
+      toast.info(`Preparing ${reportType} export...`);
+      await reportsApi.downloadReport(reportType);
+      toast.success(`Successfully exported ${reportType} report to CSV!`);
+    } catch (err: any) {
+      console.error('Export error:', err);
+      toast.error('Failed to export CSV report. Please try again.');
+    } finally {
+      setDownloadingType(null);
+    }
   };
 
   const revenueByDept = [
@@ -121,23 +133,26 @@ export const ReportsPage: React.FC = () => {
           <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-1">Exports:</span>
           <button
             onClick={() => handleExport('rooms')}
-            className="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition-colors flex items-center"
+            disabled={downloadingType === 'rooms'}
+            className="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition-colors flex items-center disabled:opacity-50"
           >
-            <FileSpreadsheet className="w-3.5 h-3.5 mr-1.5 text-blue-600" />
+            {downloadingType === 'rooms' ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <FileSpreadsheet className="w-3.5 h-3.5 mr-1.5 text-blue-600" />}
             Rooms CSV
           </button>
           <button
             onClick={() => handleExport('bills')}
-            className="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition-colors flex items-center"
+            disabled={downloadingType === 'bills'}
+            className="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition-colors flex items-center disabled:opacity-50"
           >
-            <FileSpreadsheet className="w-3.5 h-3.5 mr-1.5 text-emerald-600" />
+            {downloadingType === 'bills' ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <FileSpreadsheet className="w-3.5 h-3.5 mr-1.5 text-emerald-600" />}
             Revenue & Bills CSV
           </button>
           <button
             onClick={() => handleExport('inventory')}
-            className="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition-colors flex items-center"
+            disabled={downloadingType === 'inventory'}
+            className="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition-colors flex items-center disabled:opacity-50"
           >
-            <FileSpreadsheet className="w-3.5 h-3.5 mr-1.5 text-amber-600" />
+            {downloadingType === 'inventory' ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <FileSpreadsheet className="w-3.5 h-3.5 mr-1.5 text-amber-600" />}
             Inventory Stock CSV
           </button>
         </div>

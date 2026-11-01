@@ -3,10 +3,11 @@ import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, BedDouble, CalendarCheck, Users, 
   UtensilsCrossed, Wine, Boxes, Wrench, Receipt, 
-  BarChart3, UserCheck, ShieldAlert, Sparkles, LogIn
+  BarChart3, UserCheck, ShieldAlert, Sparkles, LogIn, Hotel
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { UserRole } from '../types';
+import { Logo } from './Logo';
 
 interface NavItem {
   name: string;
@@ -17,19 +18,19 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   {
-    name: 'Dashboard',
+    name: 'Executive Dashboard',
     path: '/dashboard',
     icon: LayoutDashboard,
     roles: ['admin', 'receptionist', 'accountant', 'restaurant_staff', 'bar_staff', 'maintenance_staff', 'inventory_manager'],
   },
   {
-    name: 'Guest Portal',
+    name: 'Guest Concierge Portal',
     path: '/guest-portal',
     icon: Sparkles,
     roles: ['guest', 'admin'],
   },
   {
-    name: 'Rooms & Grid',
+    name: 'Rooms & Grid Matrix',
     path: '/rooms',
     icon: BedDouble,
     roles: ['admin', 'receptionist', 'maintenance_staff'],
@@ -41,7 +42,7 @@ const NAV_ITEMS: NavItem[] = [
     roles: ['admin', 'receptionist', 'accountant'],
   },
   {
-    name: 'Check-In / Out',
+    name: 'Front Desk Check-In/Out',
     path: '/check-in-out',
     icon: LogIn,
     roles: ['admin', 'receptionist'],
@@ -53,25 +54,25 @@ const NAV_ITEMS: NavItem[] = [
     roles: ['admin', 'receptionist', 'accountant'],
   },
   {
-    name: 'Restaurant Orders',
+    name: 'Restaurant POS & Kitchen',
     path: '/restaurant',
     icon: UtensilsCrossed,
     roles: ['admin', 'restaurant_staff', 'receptionist'],
   },
   {
-    name: 'Bar & Lounge',
+    name: 'Bar & Lounge Tabs',
     path: '/bar',
     icon: Wine,
     roles: ['admin', 'bar_staff', 'receptionist'],
   },
   {
-    name: 'Inventory & Stock',
+    name: 'Inventory & Supplies',
     path: '/inventory',
     icon: Boxes,
     roles: ['admin', 'inventory_manager', 'restaurant_staff', 'bar_staff', 'accountant'],
   },
   {
-    name: 'Maintenance',
+    name: 'Maintenance & Repairs',
     path: '/maintenance',
     icon: Wrench,
     roles: ['admin', 'maintenance_staff', 'receptionist'],
@@ -89,13 +90,13 @@ const NAV_ITEMS: NavItem[] = [
     roles: ['admin', 'accountant', 'inventory_manager'],
   },
   {
-    name: 'Staff & Roles',
+    name: 'Staff & Privileges',
     path: '/users',
     icon: UserCheck,
     roles: ['admin'],
   },
   {
-    name: 'Audit Trail',
+    name: 'Security Audit Trail',
     path: '/audit',
     icon: ShieldAlert,
     roles: ['admin'],
@@ -112,24 +113,27 @@ export const Sidebar: React.FC = () => {
   });
 
   return (
-    <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col flex-shrink-0 min-h-screen">
+    <aside className="w-64 bg-slate-950 text-slate-300 flex flex-col flex-shrink-0 min-h-screen border-r border-slate-900 shadow-2xl">
       {/* Brand area */}
-      <div className="p-5 border-b border-slate-800">
-        <div className="flex items-center space-x-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold text-lg shadow-md">
-            S
-          </div>
-          <div>
-            <h1 className="font-bold text-white text-base leading-tight">StaySync</h1>
-            <p className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">Hospitality ERP</p>
-          </div>
+      <div className="p-5 border-b border-slate-900 bg-slate-950/80">
+        <Logo size="md" theme="dark" showSubtitle={true} />
+      </div>
+
+      {/* Property Badge */}
+      <div className="px-5 py-3 border-b border-slate-900/60 bg-slate-900/40 flex items-center justify-between text-[11px]">
+        <div className="flex items-center space-x-1.5 text-slate-400">
+          <Hotel className="w-3.5 h-3.5 text-amber-400" />
+          <span className="font-semibold text-slate-300 truncate max-w-[140px]">Grand Resort Suites</span>
         </div>
+        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+          5-STAR
+        </span>
       </div>
 
       {/* Navigation list */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        <div className="px-3 pb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-          Operations
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar">
+        <div className="px-3 pb-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+          Hotel Operations
         </div>
         {allowedItems.map((item) => {
           const Icon = item.icon;
@@ -138,14 +142,14 @@ export const Sidebar: React.FC = () => {
               key={item.path}
               to={item.path}
               className={({ isActive }) =>
-                `flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                `flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs transition-all duration-200 group ${
                   isActive
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-bold'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                    ? 'bg-gradient-to-r from-amber-500/15 to-transparent text-amber-300 border-l-2 border-amber-400 font-bold shadow-inner'
+                    : 'text-slate-400 hover:text-slate-100 hover:bg-slate-900/70 font-medium'
                 }`
               }
             >
-              <Icon className="w-4 h-4" />
+              <Icon className="w-4 h-4 transition-transform group-hover:scale-110" />
               <span>{item.name}</span>
             </NavLink>
           );
@@ -153,10 +157,13 @@ export const Sidebar: React.FC = () => {
       </nav>
 
       {/* Footer / System status */}
-      <div className="p-4 border-t border-slate-800">
-        <div className="flex items-center space-x-2 text-xs text-slate-400">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span>PostgreSQL Active</span>
+      <div className="p-4 border-t border-slate-900/80 bg-slate-950/60">
+        <div className="flex items-center justify-between text-xs text-slate-400">
+          <div className="flex items-center space-x-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-sm shadow-emerald-500/50" />
+            <span className="font-mono text-[11px] text-slate-300">System Online</span>
+          </div>
+          <span className="text-[10px] font-mono text-slate-500">v2.4.0</span>
         </div>
       </div>
     </aside>

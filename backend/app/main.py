@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from app.core.config import settings
 
 # Import routers
@@ -56,6 +56,14 @@ app.include_router(notifications_router, prefix=settings.API_V1_STR)
 app.include_router(reports_router, prefix=settings.API_V1_STR)
 app.include_router(audit_logs_router, prefix=settings.API_V1_STR)
 app.include_router(feedback_router, prefix=settings.API_V1_STR)
+
+@app.get("/docs", include_in_schema=False)
+def docs_redirect():
+    return RedirectResponse(url=f"{settings.API_V1_STR}/docs")
+
+@app.get("/redoc", include_in_schema=False)
+def redoc_redirect():
+    return RedirectResponse(url=f"{settings.API_V1_STR}/redoc")
 
 @app.get("/")
 def root():

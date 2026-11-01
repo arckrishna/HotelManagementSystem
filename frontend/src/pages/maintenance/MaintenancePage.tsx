@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useToast } from '../../context/ToastContext';
 import { 
   Wrench, Plus, Filter, AlertTriangle, CheckCircle2, 
   Clock, UserCheck, ShieldAlert, BedDouble, Search, ChevronRight 
@@ -10,6 +11,7 @@ import { Modal } from '../../components/Modal';
 import { useAuth } from '../../context/AuthContext';
 
 export const MaintenancePage: React.FC = () => {
+  const { toast } = useToast();
   const { user } = useAuth();
   const [requests, setRequests] = useState<MaintenanceRequest[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -81,7 +83,7 @@ export const MaintenancePage: React.FC = () => {
       setPriority('medium');
       loadData();
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to submit maintenance request.');
+      toast.error(err.response?.data?.detail || 'Failed to submit maintenance request.');
     }
   };
 
@@ -94,7 +96,7 @@ export const MaintenancePage: React.FC = () => {
       setSelectedReq(null);
       loadData();
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to assign technician.');
+      toast.error(err.response?.data?.detail || 'Failed to assign technician.');
     }
   };
 
@@ -111,7 +113,7 @@ export const MaintenancePage: React.FC = () => {
       setResolutionNotes('');
       loadData();
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to update request status.');
+      toast.error(err.response?.data?.detail || 'Failed to update request status.');
     }
   };
 

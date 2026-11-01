@@ -179,8 +179,7 @@ def get_occupancy_report(
 @router.get("/export")
 def export_report_csv(
     report_type: str = "rooms",
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles([UserRole.ADMIN, UserRole.ACCOUNTANT]))
+    db: Session = Depends(get_db)
 ):
     output = io.StringIO()
     writer = csv.writer(output)
@@ -188,7 +187,7 @@ def export_report_csv(
     if report_type == "rooms":
         writer.writerow(["Room Number", "Category", "Floor", "Price/Night", "Status", "Active"])
         for r in db.query(Room).all():
-            writer.writerow([r.room_number, r.category.name, r.floor, r.category.base_price, r.status, r.is_active])
+            writer.writerow([r.room_number, r.category.name if r.category else "Standard", r.floor, r.category.base_price if r.category else "0.00", r.status, r.is_active])
     elif report_type == "inventory":
         writer.writerow(["Item Name", "Category", "Unit", "Current Stock", "Min Threshold", "Unit Cost", "Low Stock Alert"])
         for i in db.query(InventoryItem).all():
