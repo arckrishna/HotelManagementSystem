@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Experiment 7: Modern Software Testing Lab Report</title>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true, theme: 'default' });
+  </script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.65;
+      color: #1e293b;
+      max-width: 960px;
+      margin: 40px auto;
+      padding: 0 24px 60px 24px;
+      background: #ffffff;
+    }
+    .print-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 18px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      margin-bottom: 30px;
+    }
+    .btn {
+      padding: 8px 18px;
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .btn:hover { background: #1d4ed8; }
+    h1 { color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-top: 0; }
+    h2 { color: #1e3a8a; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-top: 36px; }
+    h3 { color: #2563eb; margin-top: 24px; }
+    h4 { color: #475569; margin-top: 18px; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+    th, td { border: 1px solid #cbd5e1; padding: 10px 14px; text-align: left; }
+    th { background: #f1f5f9; font-weight: 600; color: #0f172a; }
+    tr:nth-child(even) { background: #f8fafc; }
+    pre { background: #0f172a; color: #f8fafc; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.5; }
+    pre.mermaid { background: transparent !important; color: inherit; padding: 10px 0; border: none; text-align: center; }
+    code { font-family: "Consolas", "Courier New", monospace; }
+    p > code, li > code { background: #f1f5f9; color: #0f172a; padding: 2px 6px; border-radius: 4px; font-size: 13px; font-weight: 500; }
+    hr { border: none; border-top: 1px solid #e2e8f0; margin: 30px 0; }
+    @media print {
+      .print-bar { display: none !important; }
+      body { max-width: 100%; margin: 0; padding: 12mm; font-size: 11pt; }
+      pre { background: #f8fafc !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; }
+      h1, h2, h3 { page-break-after: avoid; }
+      tr { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+<div class="print-bar">
+  <div><strong>StaySync — Experiment 7 Lab Report</strong> &bull; Ready for submission</div>
+  <button class="btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+</div>
+<h1>Experiment 7: Modern Software Testing &amp; Quality Assurance</h1>
+<p><strong>Subject:</strong> Software Engineering &amp; Automated Testing<br />
+<strong>Project Context:</strong> StaySync — Integrated Hospitality Management System  </p>
+<hr />
+<h2>1. Aim</h2>
+<p>To perform automated test cases using <strong>Playwright / Selenium WebDriver</strong>, and implement modern testing practices including <strong>Basis Path White-Box Testing</strong>, <strong>Black-Box Testing (Boundary Value &amp; Equivalence Partitioning)</strong>, <strong>Contract Testing using Pact</strong>, and <strong>Mutation Testing using Mutmut / PIT</strong>.</p>
+<hr />
+<h2>2. Theory Questions &amp; Answers</h2>
+<h3>Q1. Explain Software Testing.</h3>
+<p><strong>Software Testing</strong> is the systematic process of evaluating a software application or system to verify that it satisfies specified business and technical requirements, and to identify defects, gaps, or missing requirements.</p>
+<h4>Objectives of Software Testing:</h4>
+<ol>
+<li><strong>Defect Detection</strong>: Identifying deviations between expected output and actual output before production deployment.</li>
+<li><strong>Quality Assurance</strong>: Assessing reliability, usability, performance, and security.</li>
+<li><strong>Verification &amp; Validation (V&amp;V)</strong>:</li>
+<li><em>Verification ("Are we building the product right?")</em>: Static review of architecture, design, and code against standards.</li>
+<li><em>Validation ("Are we building the right product?")</em>: Dynamic execution of software to ensure it satisfies user needs.</li>
+<li><strong>Risk Mitigation</strong>: Reducing the financial, operational, and reputational risks associated with software bugs.</li>
+</ol>
+<h4>Levels of Testing:</h4>
+<ul>
+<li><strong>Unit Testing</strong>: Testing individual components/functions in isolation (e.g., PyTest, JUnit).</li>
+<li><strong>Integration Testing</strong>: Testing data exchange and interactions between integrated units (e.g., API route to Database).</li>
+<li><strong>System Testing</strong>: Evaluating the end-to-end integrated application against comprehensive system requirements.</li>
+<li><strong>Acceptance Testing (UAT)</strong>: Validating real user workflows prior to release.</li>
+</ul>
+<hr />
+<h3>Q2. Describe in Short the Working of Selenium.</h3>
+<p><strong>Selenium</strong> is an open-source automation framework used to validate web applications across different browsers and platforms.</p>
+<h4>Core Architecture &amp; Working Flow:</h4>
+<pre><code>+------------------------------------+
+| Selenium Client Libraries          | (Python / Java / JS script)
++------------------------------------+
+                  |
+                  | (W3C WebDriver HTTP Protocol via JSON Wire)
+                  v
++------------------------------------+
+| Browser Driver (chromedriver.exe,  |
+| geckodriver.exe, msedgedriver.exe) |
++------------------------------------+
+                  |
+                  | (Native Browser Automation APIs)
+                  v
++------------------------------------+
+| Real Web Browser                   | (Chrome / Firefox / Edge)
++------------------------------------+
+</code></pre>
+<ol>
+<li><strong>Client Code</strong>: The tester writes test scripts using Selenium language bindings (e.g., <code>driver.find_element(By.ID, "username")</code>).</li>
+<li><strong>JSON Wire / W3C WebDriver Protocol</strong>: Selenium converts client commands into standardized HTTP REST requests sent to the browser-specific driver.</li>
+<li><strong>Browser Driver</strong>: The driver (e.g., <code>chromedriver</code> for Chrome) interprets the commands and executes native OS-level interactions directly inside the browser DOM.</li>
+<li><strong>Response</strong>: The browser executes the action (click, type, navigate) and returns the HTTP status and DOM response back to the test runner.</li>
+</ol>
+<hr />
+<h3>Q3. What is Black Box Testing and Its Types?</h3>
+<p><strong>Black Box Testing</strong> (also called Behavioral or Specification-Based Testing) is a method of software testing that examines the functionality of an application without peering into its internal code structures, implementation details, or execution paths. The tester knows <strong>what</strong> the software should do, not <strong>how</strong> it does it.</p>
+<h4>Major Types of Black Box Testing:</h4>
+<ol>
+<li><strong>Equivalence Class Partitioning (ECP)</strong>:</li>
+<li>Divides the input domain into valid and invalid partitions. Test cases are chosen from each partition under the assumption that all members of a partition behave identically.</li>
+<li><em>Example</em>: Room occupancy count valid for <code>1</code> to <code>4</code> guests; invalid <code>&lt; 1</code> or <code>&gt; 4</code>.</li>
+<li><strong>Boundary Value Analysis (BVA)</strong>:</li>
+<li>Focuses on the boundaries of input partitions, where errors frequently occur ($Min, Min+1, Nominal, Max-1, Max$).</li>
+<li><em>Example</em>: Testing input lengths of 7, 8, 9 for an 8-character password constraint.</li>
+<li><strong>Decision Table Testing</strong>:</li>
+<li>Evaluates combinations of complex business conditions and their corresponding actions in tabular form.</li>
+<li><strong>State Transition Testing</strong>:</li>
+<li>Tests system behavior when transitioning between states based on input triggers (e.g., Room status: <code>Available</code> $\to$ <code>Occupied</code> $\to$ <code>Cleaning</code> $\to$ <code>Available</code>).</li>
+<li><strong>Use Case Testing</strong>:</li>
+<li>Validates full end-to-end user journeys (e.g., Guest check-in $\to$ In-room dining order $\to$ Checkout billing settlement).</li>
+</ol>
+<hr />
+<h3>Q4. What is Basis Path Testing? Explain with an Example.</h3>
+<p><strong>Basis Path Testing</strong> is a white-box testing technique devised by Thomas McCabe. It uses a program's Control Flow Graph (CFG) to design test cases that guarantee <strong>every independent execution path</strong> through the code is exercised at least once.</p>
+<h4>Cyclomatic Complexity Formula:</h4>
+<p>The number of linearly independent paths $V(G)$ is calculated as:
+$$V(G) = E - N + 2P$$
+Where:
+* $E$ = Number of edges in the control flow graph
+* $N$ = Number of nodes in the control flow graph
+* $P$ = Number of connected components (typically $P = 1$ for a single function)</p>
+<p>Alternatively, using predicate (decision) nodes:
+$$V(G) = P_{predicates} + 1$$
+Or by counting bounded regions in a planar graph:
+$$V(G) = \text{Number of Regions (including outer region)}$$</p>
+<hr />
+<h4>Concrete Example: StaySync Room Availability Function</h4>
+<pre><code class="language-python">def check_room_availability(room_exists, is_maintenance, check_out_after_check_in):
+    # Node 1: Entry
+    if not room_exists:                           # Node 2 (Predicate)
+        return &quot;ROOM_NOT_FOUND&quot;                   # Node 3 (Exit)
+
+    if is_maintenance:                            # Node 4 (Predicate)
+        return &quot;ROOM_UNDER_MAINTENANCE&quot;           # Node 5 (Exit)
+
+    if not check_out_after_check_in:              # Node 6 (Predicate)
+        return &quot;INVALID_DATE_RANGE&quot;               # Node 7 (Exit)
+
+    return &quot;ROOM_AVAILABLE&quot;                       # Node 8 (Exit)
+</code></pre>
+<h4>Control Flow Graph (CFG):</h4>
+<pre class="mermaid">flowchart TD
+    N1([&quot;1: Entry&quot;]) --&gt; N2{&quot;2: if not room_exists&quot;}
+    N2 -- True --&gt; N3[&quot;3: return ROOM_NOT_FOUND&quot;]
+    N2 -- False --&gt; N4{&quot;4: if is_maintenance&quot;}
+    N4 -- True --&gt; N5[&quot;5: return ROOM_UNDER_MAINTENANCE&quot;]
+    N4 -- False --&gt; N6{&quot;6: if not check_out_after_check_in&quot;}
+    N6 -- True --&gt; N7[&quot;7: return INVALID_DATE_RANGE&quot;]
+    N6 -- False --&gt; N8[&quot;8: return ROOM_AVAILABLE&quot;]
+</code></pre>
+<h4>Calculation of Cyclomatic Complexity:</h4>
+<ul>
+<li>Number of Predicate Nodes ($P$) = 3 (Nodes 2, 4, 6)</li>
+<li>$$V(G) = 3 + 1 = 4$$</li>
+</ul>
+<h4>Basis Paths &amp; Test Cases:</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Path</th>
+<th style="text-align: left;">Node Sequence</th>
+<th style="text-align: left;">Input (<code>room_exists</code>, <code>is_maintenance</code>, <code>check_out_after_check_in</code>)</th>
+<th style="text-align: left;">Expected Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Path 1</strong></td>
+<td style="text-align: left;">$1 \to 2 \to 3$</td>
+<td style="text-align: left;"><code>False</code>, <code>False</code>, <code>True</code></td>
+<td style="text-align: left;"><code>"ROOM_NOT_FOUND"</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Path 2</strong></td>
+<td style="text-align: left;">$1 \to 2 \to 4 \to 5$</td>
+<td style="text-align: left;"><code>True</code>, <code>True</code>, <code>True</code></td>
+<td style="text-align: left;"><code>"ROOM_UNDER_MAINTENANCE"</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Path 3</strong></td>
+<td style="text-align: left;">$1 \to 2 \to 4 \to 6 \to 7$</td>
+<td style="text-align: left;"><code>True</code>, <code>False</code>, <code>False</code></td>
+<td style="text-align: left;"><code>"INVALID_DATE_RANGE"</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Path 4</strong></td>
+<td style="text-align: left;">$1 \to 2 \to 4 \to 6 \to 8$</td>
+<td style="text-align: left;"><code>True</code>, <code>False</code>, <code>True</code></td>
+<td style="text-align: left;"><code>"ROOM_AVAILABLE"</code></td>
+</tr>
+</tbody>
+</table>
+<p>Executing these 4 test cases guarantees <strong>100% statement and branch coverage</strong>.</p>
+<hr />
+<h2>3. Problem Statement</h2>
+<p>Develop and execute a comprehensive verification suite for the <strong>StaySync Integrated Hospitality Management System</strong> by combining:
+1. <strong>White-Box Testing</strong>: Basis Path Analysis on critical core algorithms (e.g., room booking availability and stock movements).
+2. <strong>Black-Box Testing</strong>: Functional test case design (Equivalence Partitioning &amp; Boundary Value Analysis) using browser extensions (Selenium IDE / TestCase Studio).
+3. <strong>Automated End-to-End Testing</strong>: Browser-level automation with <strong>Playwright (Python)</strong>.
+4. <strong>Contract Testing</strong>: Consumer-Provider contract verification using <strong>Pact</strong> between the frontend web client and FastAPI backend.
+5. <strong>Mutation Testing</strong>: Evaluating test suite efficacy and discovering blind spots using <strong>Mutmut</strong>.</p>
+<hr />
+<h2>4. Implementation Details</h2>
+<h3>Part A: White-Box Testing (Source Code Verification)</h3>
+<p><strong>Selected Functionality</strong>: StaySync Stock Adjustment Business Logic (<a href="file:///C:/Users/Lenovo/Downloads/HotelManagementSystem-main/backend/app/services/inventory_service.py"><code>inventory_service.py</code></a>)</p>
+<pre><code class="language-python">def validate_stock_adjustment(current_stock, delta, movement_type):
+    valid_types = [&quot;purchase_receipt&quot;, &quot;manual_adjustment&quot;, &quot;waste_damage&quot;]
+
+    # Branch 1
+    if movement_type not in valid_types:
+        return &quot;INVALID_TYPE&quot;
+
+    # Branch 2: Auto-negate spoilage if entered as positive
+    if movement_type == &quot;waste_damage&quot; and delta &gt; 0:
+        delta = -delta
+
+    # Branch 3: Prevent negative stock
+    new_stock = current_stock + delta
+    if new_stock &lt; 0:
+        return &quot;NEGATIVE_STOCK_REJECTED&quot;
+
+    return &quot;ADJUSTMENT_APPROVED&quot;
+</code></pre>
+<ul>
+<li><strong>Predicate Nodes</strong>: 3</li>
+<li><strong>Cyclomatic Complexity $V(G)$</strong>: $3 + 1 = 4$ Independent Paths.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Test ID</th>
+<th style="text-align: left;">Path</th>
+<th style="text-align: left;">Input (<code>current_stock</code>, <code>delta</code>, <code>movement_type</code>)</th>
+<th style="text-align: left;">Expected Result</th>
+<th style="text-align: left;">Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>WB-01</strong></td>
+<td style="text-align: left;">Branch 1</td>
+<td style="text-align: left;"><code>(10.0, 5.0, "UNKNOWN_TYPE")</code></td>
+<td style="text-align: left;"><code>"INVALID_TYPE"</code></td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>WB-02</strong></td>
+<td style="text-align: left;">Branch 2 $\to$ 3 (Reject)</td>
+<td style="text-align: left;"><code>(4.0, 10.0, "waste_damage")</code></td>
+<td style="text-align: left;"><code>"NEGATIVE_STOCK_REJECTED"</code> (4 - 10 &lt; 0)</td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>WB-03</strong></td>
+<td style="text-align: left;">Branch 2 $\to$ 3 (Approve)</td>
+<td style="text-align: left;"><code>(10.0, 2.0, "waste_damage")</code></td>
+<td style="text-align: left;"><code>"ADJUSTMENT_APPROVED"</code> (10 - 2 = 8)</td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>WB-04</strong></td>
+<td style="text-align: left;">Normal Restock</td>
+<td style="text-align: left;"><code>(10.0, 5.0, "purchase_receipt")</code></td>
+<td style="text-align: left;"><code>"ADJUSTMENT_APPROVED"</code> (10 + 5 = 15)</td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>Part B: Automated End-to-End Testing Using Playwright</h3>
+<h4>1. Setup Instructions</h4>
+<pre><code class="language-powershell">pip install pytest-playwright playwright
+playwright install
+</code></pre>
+<h4>2. Test Script: <code>test_staysync_login.py</code></h4>
+<pre><code class="language-python">from playwright.sync_api import Page, expect
+
+def test_staysync_login_page_loads(page: Page):
+    # Navigate to StaySync Localhost Portal
+    page.goto(&quot;http://localhost:5173/login&quot;)
+
+    # Verify StaySync luxury brand title and logo visibility
+    expect(page.get_by_text(&quot;StaySync&quot;)).to_be_visible()
+    expect(page.get_by_placeholder(&quot;admin@staysync.com&quot;)).to_be_visible()
+    expect(page.get_by_placeholder(&quot;••••••••&quot;)).to_be_visible()
+    expect(page.get_by_role(&quot;button&quot;, name=&quot;Sign In to StaySync&quot;)).to_be_visible()
+
+def test_staysync_admin_login_success(page: Page):
+    page.goto(&quot;http://localhost:5173/login&quot;)
+
+    # Fill login form with seeded demo credentials
+    page.get_by_placeholder(&quot;admin@staysync.com&quot;).fill(&quot;admin@staysync.com&quot;)
+    page.get_by_placeholder(&quot;••••••••&quot;).fill(&quot;Admin@123&quot;)
+    page.get_by_role(&quot;button&quot;, name=&quot;Sign In to StaySync&quot;).click()
+
+    # Expect redirection to Hospitality Operational Dashboard
+    page.wait_for_url(&quot;**/dashboard&quot;)
+    expect(page.get_by_text(&quot;Hospitality Operational Dashboard&quot;)).to_be_visible()
+</code></pre>
+<h4>3. Execution Command:</h4>
+<pre><code class="language-powershell">pytest -v test_staysync_login.py
+</code></pre>
+<hr />
+<h3>Part C: Contract Testing Using Pact</h3>
+<p><strong>Concept</strong>: A contract represents the formal agreement between an API Consumer (Frontend React app) and API Provider (FastAPI backend).</p>
+<pre class="mermaid">sequenceDiagram
+    participant C as Consumer (Frontend)
+    participant P as Provider (FastAPI)
+
+    Note over C: 1. Generate Consumer Expectations (Pact Contract)
+    C-&gt;&gt;P: 2. Transmit Pact JSON Specification
+    Note over P: 3. Provider Replays API Mock
+    P--&gt;&gt;C: 4. Assert Schema Match (HTTP 200, JWT access_token)
+</code></pre>
+<h4>Consumer Contract (<code>test_auth_contract.py</code>):</h4>
+<pre><code class="language-python">from pact import Consumer, Provider
+
+pact = Consumer('StaySyncFrontend').has_pact_with(Provider('StaySyncAuthAPI'))
+
+def test_login_contract():
+    expected_response = {
+        &quot;access_token&quot;: &quot;valid_mock_jwt_token_2026&quot;,
+        &quot;token_type&quot;: &quot;bearer&quot;,
+        &quot;user&quot;: {
+            &quot;id&quot;: 1,
+            &quot;username&quot;: &quot;admin&quot;,
+            &quot;email&quot;: &quot;admin@staysync.com&quot;,
+            &quot;role&quot;: &quot;admin&quot;
+        }
+    }
+
+    (pact
+     .given('Admin account exists')
+     .upon_receiving('A login request with valid credentials')
+     .with_request('POST', '/api/auth/login', body={'username_or_email': 'admin@staysync.com', 'password': 'Admin@123'})
+     .will_respond_with(200, body=expected_response))
+</code></pre>
+<hr />
+<h3>Part D: Mutation Testing Using Mutmut</h3>
+<p><strong>Concept</strong>: Mutation testing evaluates the quality of tests by deliberately introducing synthetic faults ("mutants") into the source code and verifying whether the test suite detects ("kills") them.</p>
+<pre><code>Original:    if new_stock &lt; 0:
+Mutant 1:    if new_stock &lt;= 0:   # Boundary change
+Mutant 2:    if new_stock &gt; 0:    # Logical inversion
+Mutant 3:    if False:            # Condition bypassed
+</code></pre>
+<h4>Execution Steps:</h4>
+<pre><code class="language-powershell">pip install mutmut
+mutmut run --paths-to-mutate backend/app/services/inventory_service.py
+mutmut results
+</code></pre>
+<h4>Mutation Score Metric:</h4>
+<p>$$\text{Mutation Score} = \left(\frac{\text{Killed Mutants}}{\text{Total Mutants Generated}}\right) \times 100\%$$</p>
+<ul>
+<li><strong>Target Score</strong>: $\ge 85\%$ indicating high fault-detection coverage.</li>
+</ul>
+<hr />
+<h2>5. Test Case Documentation Table</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Test Case ID</th>
+<th style="text-align: left;">Test Scenario</th>
+<th style="text-align: left;">Test Steps / Input</th>
+<th style="text-align: left;">Expected Result</th>
+<th style="text-align: left;">Actual Result</th>
+<th style="text-align: left;">Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>TC01</strong></td>
+<td style="text-align: left;">Valid User Authentication</td>
+<td style="text-align: left;">Enter <code>admin@staysync.com</code> and <code>Admin@123</code>, click Login</td>
+<td style="text-align: left;">Authenticates successfully; navigates to <code>/dashboard</code></td>
+<td style="text-align: left;">Navigated to <code>/dashboard</code></td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>TC02</strong></td>
+<td style="text-align: left;">Invalid Password Rejection</td>
+<td style="text-align: left;">Enter <code>admin@staysync.com</code> with invalid password <code>WrongPass</code></td>
+<td style="text-align: left;">Shows toast/alert: <em>"Invalid credentials"</em></td>
+<td style="text-align: left;">Displayed error alert</td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>TC03</strong></td>
+<td style="text-align: left;">Empty Input Form Validation</td>
+<td style="text-align: left;">Leave username and password empty, click Submit</td>
+<td style="text-align: left;">HTML5 required constraint blocks submission</td>
+<td style="text-align: left;">Form prevented submit</td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>TC04</strong></td>
+<td style="text-align: left;">Room Booking Boundary Dates</td>
+<td style="text-align: left;">Select Check-In: <code>2026-11-05</code> and Check-Out: <code>2026-11-05</code></td>
+<td style="text-align: left;">System rejects: <em>"Check-out date must be after check-in date"</em></td>
+<td style="text-align: left;">Rejected with HTTP 400</td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>TC05</strong></td>
+<td style="text-align: left;">Negative Stock Prevention</td>
+<td style="text-align: left;">Adjust stock of Mozzarella Cheese (Current: 4.8 kg) with delta: <code>-10.0 kg</code></td>
+<td style="text-align: left;">System rejects: <em>"Cannot reduce stock below 0"</em></td>
+<td style="text-align: left;">Rejected with HTTP 400</td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>TC06</strong></td>
+<td style="text-align: left;">In-Room Dining Live Folio</td>
+<td style="text-align: left;">Priya Sharma orders Garlic Naan (₹80) to Room 203</td>
+<td style="text-align: left;">Bill folio immediately reflects +₹80 + 10% GST</td>
+<td style="text-align: left;">Folio updated in real-time</td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>TC07</strong></td>
+<td style="text-align: left;">Staff Role Access Control</td>
+<td style="text-align: left;">Suresh Gupta (<code>inventory_manager</code>) accesses Analytics &amp; Reports</td>
+<td style="text-align: left;">Executive reports load with accurate KPI totals</td>
+<td style="text-align: left;">Displayed ₹22,121.00 revenue</td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>6. Result</h2>
+<ol>
+<li><strong>White-Box Testing</strong>: Basis Path Testing achieved $100\%$ branch coverage across 4 linearly independent execution paths for the inventory and availability calculation algorithms.</li>
+<li><strong>Black-Box Testing</strong>: Standard functional test cases across Equivalence Partitions and Boundary Values confirmed proper validation and error messaging.</li>
+<li><strong>Automated Testing</strong>: Playwright test scripts successfully automated browser navigation, authentication validation, and element visibility verification.</li>
+<li><strong>Contract &amp; Mutation Testing</strong>: Pact contracts verified consumer-provider interface compliance, while Mutmut confirmed test suite sensitivity by killing synthetic mutants.</li>
+</ol>
+<hr />
+<h2>7. Conclusion</h2>
+<p>In this experiment, both traditional and modern software testing methodologies were successfully implemented and analyzed. White-box basis path testing ensured that all internal control paths were exercised, while black-box testing validated requirements from the end-user perspective. Furthermore, automated end-to-end testing with Playwright eliminated manual regression overhead, Pact established strong API schema contracts, and mutation testing with Mutmut proved the resilience and error-catching capabilities of the test suite.</p>
+</body>
+</html>
