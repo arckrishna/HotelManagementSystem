@@ -6,6 +6,23 @@ from app.models.notification import NotificationType
 from app.services.notification_service import create_notification
 from app.services.audit_service import log_audit_action
 
+MOVEMENT_TYPE_MAP = {
+    "RESTOCK": MovementType.PURCHASE_RECEIPT,
+    "restock": MovementType.PURCHASE_RECEIPT,
+    "PURCHASE_RECEIPT": MovementType.PURCHASE_RECEIPT,
+    "purchase_receipt": MovementType.PURCHASE_RECEIPT,
+    "MANUAL_CORRECTION": MovementType.MANUAL_ADJUSTMENT,
+    "manual_correction": MovementType.MANUAL_ADJUSTMENT,
+    "MANUAL_ADJUSTMENT": MovementType.MANUAL_ADJUSTMENT,
+    "manual_adjustment": MovementType.MANUAL_ADJUSTMENT,
+    "SPOILAGE_WASTE": MovementType.WASTE_DAMAGE,
+    "spoilage_waste": MovementType.WASTE_DAMAGE,
+    "WASTE_DAMAGE": MovementType.WASTE_DAMAGE,
+    "waste_damage": MovementType.WASTE_DAMAGE,
+    "ORDER_CONSUMPTION": MovementType.ORDER_CONSUMPTION,
+    "order_consumption": MovementType.ORDER_CONSUMPTION,
+}
+
 def adjust_stock(
     db: Session,
     item_id: int,
@@ -14,8 +31,16 @@ def adjust_stock(
     reason: str | None = None,
     acting_user_id: int = 1
 ) -> InventoryMovement:
-    if movement_type not in MovementType.ALL_TYPES:
-        raise HTTPException(status_code=400, detail=f"Invalid movement type: {movement_type}")
+    normalized_type = MOVEMENT_TYPE_MAP.get(
+        movement_type, 
+        movement_type.lower() if isinstance(movement_type, str) else movement_type
+    )
+    if normalized_type not in MovementType.ALL_TYPES:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Invalid movement type: {movement_type}. Valid types are: {MovementType.ALL_TYPES}"
+        )
+    movement_type = normalized_type
 
     item = db.query(InventoryItem).filter(InventoryItem.id == item_id).with_for_update().first()
     if not item:

@@ -1,5 +1,8 @@
 import os
 
+_BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_DEFAULT_DB_FILE = os.path.join(_BACKEND_DIR, "staysync.db").replace("\\", "/")
+
 class Settings:
     PROJECT_NAME: str = "StaySync — Integrated Hospitality Management System"
     VERSION: str = "1.0.0"
@@ -8,7 +11,7 @@ class Settings:
     # Database URL: Defaults to local zero-config SQLite, or PostgreSQL via env var
     DATABASE_URL: str = os.getenv(
         "DATABASE_URL", 
-        "sqlite:///./staysync.db"
+        f"sqlite:///{_DEFAULT_DB_FILE}"
     )
     
     # JWT Settings

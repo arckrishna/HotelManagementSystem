@@ -38,7 +38,7 @@ export const InventoryPage: React.FC = () => {
 
   // Stock adjust form
   const [adjustDelta, setAdjustDelta] = useState('');
-  const [adjustType, setAdjustType] = useState('RESTOCK');
+  const [adjustType, setAdjustType] = useState('purchase_receipt');
   const [adjustReason, setAdjustReason] = useState('');
 
   const loadData = async () => {
@@ -87,11 +87,16 @@ export const InventoryPage: React.FC = () => {
     e.preventDefault();
     if (!selectedItem) return;
     try {
+      let delta = Number(adjustDelta);
+      if (adjustType === 'waste_damage' && delta > 0) {
+        delta = -delta;
+      }
       await inventoryApi.adjustStock(selectedItem.id, {
         movement_type: adjustType,
-        quantity_delta: Number(adjustDelta),
+        quantity_delta: delta,
         reason: adjustReason || undefined
       });
+      toast.success(`Successfully adjusted stock for ${selectedItem.name}!`);
       setIsAdjustOpen(false);
       setSelectedItem(null);
       setAdjustDelta('');
@@ -349,7 +354,7 @@ export const InventoryPage: React.FC = () => {
                         </td>
                         <td className="py-3 px-4">
                           <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-slate-100 text-slate-700">
-                            {mov.movement_type}
+                            {mov.movement_type?.replace(/_/g, ' ').toUpperCase()}
                           </span>
                         </td>
                         <td className={`py-3 px-4 font-bold ${
@@ -496,9 +501,9 @@ export const InventoryPage: React.FC = () => {
                 onChange={(e) => setAdjustType(e.target.value)}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="RESTOCK">Restock / Purchase (+)</option>
-                <option value="MANUAL_CORRECTION">Manual Correction</option>
-                <option value="SPOILAGE_WASTE">Spoilage / Wastage (-)</option>
+                <option value="purchase_receipt">Restock / Purchase (+)</option>
+                <option value="manual_adjustment">Manual Correction (±)</option>
+                <option value="waste_damage">Spoilage / Wastage (-)</option>
               </select>
             </div>
 
