@@ -34,7 +34,7 @@ def get_restaurant_menu(
 def create_menu_item(
     req: MenuItemCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles([UserRole.ADMIN]))
+    current_user: User = Depends(require_roles([UserRole.ADMIN, UserRole.RESTAURANT_STAFF]))
 ):
     req_dict = req.model_dump()
     req_dict["department"] = DepartmentType.RESTAURANT

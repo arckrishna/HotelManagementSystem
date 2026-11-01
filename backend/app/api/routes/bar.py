@@ -30,7 +30,7 @@ def get_bar_menu(
 def create_bar_item(
     req: MenuItemCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles([UserRole.ADMIN]))
+    current_user: User = Depends(require_roles([UserRole.ADMIN, UserRole.BAR_STAFF]))
 ):
     req_dict = req.model_dump()
     req_dict["department"] = DepartmentType.BAR
@@ -93,7 +93,7 @@ def toggle_bar_item_availability(
 def list_bar_orders(
     status: str | None = None,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles([UserRole.ADMIN, UserRole.BAR_STAFF]))
+    current_user: User = Depends(require_roles([UserRole.ADMIN, UserRole.BAR_STAFF, UserRole.RECEPTIONIST, UserRole.ACCOUNTANT]))
 ):
     query = db.query(Order).filter(Order.department == DepartmentType.BAR)
     if status:

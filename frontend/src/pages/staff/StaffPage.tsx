@@ -24,6 +24,7 @@ export const StaffPage: React.FC = () => {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [deactivatingUserId, setDeactivatingUserId] = useState<number | null>(null);
 
   // Add User Form
   const [username, setUsername] = useState('');
@@ -99,10 +100,13 @@ export const StaffPage: React.FC = () => {
     }
   };
 
-  const handleDeleteUser = async (id: number) => {
-    if (!confirm('Are you sure you want to deactivate this staff member?')) return;
+  const handleConfirmDeactivate = async () => {
+    if (!deactivatingUserId) return;
+    const id = deactivatingUserId;
+    setDeactivatingUserId(null);
     try {
       await usersApi.deleteUser(id);
+      toast.success('Staff account deactivated successfully.');
       loadUsers();
     } catch (err: any) {
       toast.error(err.response?.data?.detail || 'Failed to delete staff member.');
@@ -306,7 +310,7 @@ export const StaffPage: React.FC = () => {
                           </button>
                           {u.id !== currentUser.id && u.is_active && (
                             <button
-                              onClick={() => handleDeleteUser(u.id)}
+                              onClick={() => setDeactivatingUserId(u.id)}
                               className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
                               title="Deactivate Staff Account"
                             >
@@ -512,6 +516,38 @@ export const StaffPage: React.FC = () => {
           </div>
         </form>
       </Modal>
+      {/* Deactivate Confirmation Modal */}
+      {deactivatingUserId !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+            <div className="w-12 h-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
+              <AlertCircle className="w-6 h-6" />
+            </div>
+            <div className="text-center">
+              <h3 className="text-base font-bold text-slate-900">Deactivate Staff Account?</h3>
+              <p className="text-xs text-slate-500 mt-1">
+                This staff member will no longer be able to log in or perform system actions.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setDeactivatingUserId(null)}
+                className="py-2.5 px-4 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
+              >
+                Keep Active
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDeactivate}
+                className="py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition shadow-sm"
+              >
+                Yes, Deactivate
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

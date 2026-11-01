@@ -68,6 +68,11 @@ def create_order(
         room_id = active_stay.room_id
         if active_stay.bill:
             bill_id = active_stay.bill.id
+        else:
+            from app.models.billing import Bill
+            active_bill = db.query(Bill).filter(Bill.stay_id == active_stay.id).first()
+            if active_bill:
+                bill_id = active_bill.id
 
     subtotal = Decimal("0.00")
     order_items_to_add = []
@@ -134,6 +139,26 @@ def create_order(
             subtotal=item_spec["subtotal"]
         )
         db.add(order_item)
+
+    # Real-time folio aggregation: update guest room bill immediately
+    if is_billed_to_room and bill_id:
+        from app.models.billing import Bill
+        bill = db.query(Bill).filter(Bill.id == bill_id).first()
+        if bill:
+            if department == DepartmentType.BAR:
+                bill.bar_charges = (bill.bar_charges or Decimal("0.00")) + order.total_amount
+            else:
+                bill.restaurant_charges = (bill.restaurant_charges or Decimal("0.00")) + order.total_amount
+            
+            subtotal_all = (
+                (bill.room_charges or Decimal("0.00")) + 
+                (bill.restaurant_charges or Decimal("0.00")) + 
+                (bill.bar_charges or Decimal("0.00")) + 
+                (bill.other_charges or Decimal("0.00"))
+            )
+            bill.tax_amount = (subtotal_all * Decimal("0.10")).quantize(Decimal("0.01"))
+            bill.total_amount = subtotal_all + bill.tax_amount - (bill.discount_amount or Decimal("0.00"))
+            bill.outstanding_balance = max(Decimal("0.00"), bill.total_amount - (bill.paid_amount or Decimal("0.00")))
 
     # Dispatches in-app notification to staff
     target_role = "bar_staff" if department == DepartmentType.BAR else "restaurant_staff"

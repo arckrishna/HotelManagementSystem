@@ -113,7 +113,7 @@ def assign_technician(
     request_id: int,
     req: MaintenanceAssignRequest,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles([UserRole.ADMIN, UserRole.MAINTENANCE_STAFF]))
+    current_user: User = Depends(require_roles([UserRole.ADMIN, UserRole.MAINTENANCE_STAFF, UserRole.RECEPTIONIST]))
 ):
     maint = db.query(MaintenanceRequest).filter(MaintenanceRequest.id == request_id).first()
     if not maint:
@@ -158,7 +158,7 @@ def update_maintenance_status(
     request_id: int,
     req: MaintenanceStatusUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles([UserRole.ADMIN, UserRole.MAINTENANCE_STAFF]))
+    current_user: User = Depends(require_roles([UserRole.ADMIN, UserRole.MAINTENANCE_STAFF, UserRole.RECEPTIONIST]))
 ):
     maint = db.query(MaintenanceRequest).filter(MaintenanceRequest.id == request_id).first()
     if not maint:

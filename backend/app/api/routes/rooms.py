@@ -19,7 +19,7 @@ def list_categories(db: Session = Depends(get_db)):
 def create_category(
     req: RoomCategoryCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles([UserRole.ADMIN]))
+    current_user: User = Depends(require_roles([UserRole.ADMIN, UserRole.RECEPTIONIST]))
 ):
     cat = RoomCategory(**req.model_dump())
     db.add(cat)
@@ -70,7 +70,7 @@ def search_available_rooms(
 def create_room(
     req: RoomCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles([UserRole.ADMIN]))
+    current_user: User = Depends(require_roles([UserRole.ADMIN, UserRole.RECEPTIONIST]))
 ):
     existing = db.query(Room).filter(Room.room_number == req.room_number).first()
     if existing:

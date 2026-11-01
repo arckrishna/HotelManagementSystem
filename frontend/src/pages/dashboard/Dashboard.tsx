@@ -38,25 +38,25 @@ export const Dashboard: React.FC = () => {
       setLoading(true);
       try {
         const [statsRes, actRes] = await Promise.all([
-          reportsApi.getDashboardKpis(),
-          reportsApi.getRecentActivities(),
+          reportsApi.getDashboardKpis().catch(() => ({ data: null })),
+          reportsApi.getRecentActivities().catch(() => ({ data: [] })),
         ]);
-        setStats(statsRes.data);
-        setActivities(actRes.data);
+        if (statsRes.data) setStats(statsRes.data);
+        if (actRes.data) setActivities(actRes.data);
 
         // Additional alert feeds
-        if (statsRes.data.critical_maintenance_requests > 0 || user?.role === 'maintenance_staff') {
-          const mRes = await maintenanceApi.getRequests({ priority: 'critical' });
+        if ((statsRes.data && statsRes.data.critical_maintenance_requests > 0) || user?.role === 'maintenance_staff') {
+          const mRes = await maintenanceApi.getRequests({ priority: 'critical' }).catch(() => ({ data: [] }));
           setCriticalMaintenance(mRes.data);
         }
 
-        if (statsRes.data.low_stock_items_count > 0 || user?.role === 'inventory_manager') {
-          const invRes = await inventoryApi.getItems({ low_stock_only: true });
+        if ((statsRes.data && statsRes.data.low_stock_items_count > 0) || user?.role === 'inventory_manager') {
+          const invRes = await inventoryApi.getItems({ low_stock_only: true }).catch(() => ({ data: [] }));
           setLowStockItems(invRes.data);
         }
 
         if (user?.role === 'restaurant_staff' || user?.role === 'admin') {
-          const oRes = await restaurantApi.getOrders({ status: 'new' });
+          const oRes = await restaurantApi.getOrders({ status: 'new' }).catch(() => ({ data: [] }));
           setKitchenOrders(oRes.data);
         }
       } catch (err) {

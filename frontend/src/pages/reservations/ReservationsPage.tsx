@@ -28,6 +28,7 @@ export const ReservationsPage: React.FC = () => {
   const [specialRequests, setSpecialRequests] = useState('');
   const [checkingAvailability, setCheckingAvailability] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
+  const [cancellingResId, setCancellingResId] = useState<number | null>(null);
 
   const loadReservations = async () => {
     setLoading(true);
@@ -104,10 +105,13 @@ export const ReservationsPage: React.FC = () => {
     }
   };
 
-  const handleCancel = async (id: number) => {
-    if (!confirm('Are you sure you want to cancel this reservation?')) return;
+  const handleConfirmCancel = async () => {
+    if (!cancellingResId) return;
+    const id = cancellingResId;
+    setCancellingResId(null);
     try {
       await reservationsApi.cancelReservation(id);
+      toast.success('Reservation successfully cancelled.');
       loadReservations();
     } catch (err: any) {
       toast.error(err.response?.data?.detail || 'Failed to cancel reservation.');
@@ -231,7 +235,7 @@ export const ReservationsPage: React.FC = () => {
                     <td className="px-5 py-3.5 text-right">
                       {r.status === 'confirmed' && (
                         <button
-                          onClick={() => handleCancel(r.id)}
+                          onClick={() => setCancellingResId(r.id)}
                           className="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 font-bold text-[11px] transition"
                         >
                           Cancel
@@ -377,6 +381,38 @@ export const ReservationsPage: React.FC = () => {
           </button>
         </form>
       </Modal>
+      {/* Cancel Confirmation Modal */}
+      {cancellingResId !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+            <div className="w-12 h-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
+              <AlertCircle className="w-6 h-6" />
+            </div>
+            <div className="text-center">
+              <h3 className="text-base font-bold text-slate-900">Cancel Reservation?</h3>
+              <p className="text-xs text-slate-500 mt-1">
+                Are you sure you want to cancel this booking? The room will immediately be released back to available inventory.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setCancellingResId(null)}
+                className="py-2.5 px-4 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
+              >
+                Keep Booking
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmCancel}
+                className="py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition shadow-sm"
+              >
+                Yes, Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
