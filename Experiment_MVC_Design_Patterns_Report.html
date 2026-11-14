@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Experiment: MVC Architecture & Design Patterns Lab Report</title>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true, theme: 'default' });
+  </script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.65;
+      color: #1e293b;
+      max-width: 960px;
+      margin: 40px auto;
+      padding: 0 24px 60px 24px;
+      background: #ffffff;
+    }
+    .print-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 18px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      margin-bottom: 30px;
+    }
+    .btn {
+      padding: 8px 18px;
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .btn:hover { background: #1d4ed8; }
+    h1 { color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-top: 0; }
+    h2 { color: #1e3a8a; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-top: 36px; }
+    h3 { color: #2563eb; margin-top: 24px; }
+    h4 { color: #475569; margin-top: 18px; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+    th, td { border: 1px solid #cbd5e1; padding: 10px 14px; text-align: left; }
+    th { background: #f1f5f9; font-weight: 600; color: #0f172a; }
+    tr:nth-child(even) { background: #f8fafc; }
+    pre { background: #0f172a; color: #f8fafc; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.5; }
+    pre.mermaid { background: transparent !important; color: inherit; padding: 10px 0; border: none; text-align: center; }
+    code { font-family: "Consolas", "Courier New", monospace; }
+    p > code, li > code { background: #f1f5f9; color: #0f172a; padding: 2px 6px; border-radius: 4px; font-size: 13px; font-weight: 500; }
+    hr { border: none; border-top: 1px solid #e2e8f0; margin: 30px 0; }
+    @media print {
+      .print-bar { display: none !important; }
+      body { max-width: 100%; margin: 0; padding: 12mm; font-size: 11pt; }
+      pre { background: #f8fafc !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; }
+      h1, h2, h3 { page-break-after: avoid; }
+      tr { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+<div class="print-bar">
+  <div><strong>StaySync — MVC & Design Patterns Lab Report</strong> &bull; Ready for submission</div>
+  <button class="btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+</div>
+<h1>Experiment: Design &amp; Implementation of Software Architecture (MVC) and GoF Design Patterns</h1>
+<p><strong>Subject:</strong> Software Architecture &amp; Object-Oriented Design<br />
+<strong>Project Context:</strong> StaySync — Integrated Hospitality Management System<br />
+<strong>Repository:</strong> <a href="https://github.com/arckrishna/HotelManagementSystem">github.com/arckrishna/HotelManagementSystem</a>  </p>
+<hr />
+<h2>1. Aim</h2>
+<p>To design and implement a software application using <strong>Model–View–Controller (MVC)</strong> architecture and apply appropriate <strong>Gang of Four (GoF) design patterns</strong>—including <strong>Singleton</strong>, <strong>Factory Method</strong>, <strong>Composite</strong>, and <strong>Bridge</strong>—for the StaySync Hospitality Management System.</p>
+<hr />
+<h2>2. Theory</h2>
+<h3>2.1 Software Architecture</h3>
+<p><strong>Software Architecture</strong> defines the high-level structure of a software system. It comprises software elements, relations among them, and properties of both elements and relations. Architecture serves as the blueprint for both the system and the project developing it, defining the fundamental design decisions that are high-cost to change once implemented.</p>
+<p>Key concerns of software architecture include:
+* <strong>Separation of Concerns (SoC)</strong>: Dividing software into distinct sections such that each section addresses a separate concern.
+* <strong>Modularity</strong>: Structuring the application into independent, swappable components.
+* <strong>Extensibility</strong>: Ensuring new features (e.g., adding a new payment gateway or room category) do not require rewriting existing modules.</p>
+<hr />
+<h3>2.2 Model–View–Controller (MVC) Architecture</h3>
+<p>The <strong>Model–View–Controller (MVC)</strong> pattern divides an interactive application into three interconnected components, segregating internal representations of information from the ways information is presented to and accepted from the user.</p>
+<pre><code>       User Action (HTTP Request)
+  [User] ----------------------------&gt; [ CONTROLLER ]
+                                             |
+                                             | 1. Invokes Business Logic / CRUD
+                                             v
+                                        [  MODEL  ]
+                                             |
+                                             | 2. Retrieves / Updates State
+                                             v
+  [User] &lt;---------------------------- [   VIEW   ]
+            Rendered JSON / HTML UI
+</code></pre>
+<ol>
+<li><strong>Model (Business Logic &amp; Data State)</strong>:</li>
+<li>Encapsulates the core data entities, database schemas, validation rules, and business algorithms.</li>
+<li>Directly manages data, logic, and rules of the application.</li>
+<li>Completely decoupled from the user interface; has no knowledge of how its data is presented.</li>
+<li>
+<p><em>StaySync Example</em>: SQLAlchemy models (<code>Room</code>, <code>Reservation</code>, <code>Bill</code>, <code>Guest</code>) and domain services (<code>reservation_service.py</code>, <code>order_service.py</code>).</p>
+</li>
+<li>
+<p><strong>View (Presentation Layer)</strong>:</p>
+</li>
+<li>Responsible for rendering the data received from the Model via the Controller into a user-consumable format.</li>
+<li>Contains <strong>zero business logic</strong>; strictly presents data and captures user input triggers.</li>
+<li>
+<p><em>StaySync Example</em>: React UI components (<code>ReservationsPage.tsx</code>, <code>BillingPage.tsx</code>, <code>GuestPortal.tsx</code>, luxury toast notifications).</p>
+</li>
+<li>
+<p><strong>Controller (Intermediary &amp; Orchestrator)</strong>:</p>
+</li>
+<li>Accepts user requests (e.g., HTTP POST, GET, PUT), parses and validates incoming payloads.</li>
+<li>Coordinates the Model layer to execute the requested business actions.</li>
+<li>Selects and feeds the response data into the appropriate View.</li>
+<li><em>StaySync Example</em>: FastAPI REST routers (<code>reservations.py</code>, <code>billing.py</code>, <code>inventory.py</code>) validating Pydantic DTOs and returning JSON representations.</li>
+</ol>
+<hr />
+<h3>2.3 Advantages of MVC Architecture</h3>
+<ol>
+<li><strong>Clear Separation of Concerns (Maintainability)</strong>: Business rules are isolated in the Model, API routing in the Controller, and UI styling in the View. Modifying UI styling never risks corrupting financial billing logic.</li>
+<li><strong>Concurrent &amp; Parallel Development</strong>: Frontend engineers can build React view components independently while backend engineers construct database models and business services.</li>
+<li><strong>High Reusability (Multiple Views for One Model)</strong>: The same Model data (e.g., <code>Room</code> availability) can be consumed simultaneously by an Administrative Dashboard, a Guest Mobile View, and an external Booking API.</li>
+<li><strong>Enhanced Testability</strong>: Controllers and Models can be unit-tested programmatically in headless test harnesses (e.g., PyTest) without spinning up a browser DOM.</li>
+<li><strong>Ease of Modification &amp; Refactoring</strong>: Migrating database engines (e.g., SQLite to PostgreSQL) requires updating only the Model layer without altering Controllers or React Views.</li>
+</ol>
+<hr />
+<h3>2.4 Why is the Singleton Pattern Used for Databases?</h3>
+<p>A <strong>Database Connection</strong> represents a heavy, stateful operating system resource involving TCP socket allocation, TLS handshakes, authentication, and memory allocation.</p>
+<p>Using the <strong>Singleton Pattern</strong> for database connection management ensures that <strong>only one instance</strong> of the connection engine and pool manager exists throughout the entire application lifecycle.</p>
+<h4>Critical Reasons:</h4>
+<ol>
+<li><strong>Connection Pool Management</strong>: Rather than opening and closing a new physical TCP connection on every HTTP request, a Singleton engine maintains a managed pool of reusable connections (e.g., <code>pool_size=10, max_overflow=20</code>), drastically reducing connection latency.</li>
+<li><strong>Resource Conservation &amp; Socket Leak Prevention</strong>: Opening unmanaged connections on high-traffic servers rapidly exhausts OS file descriptors and crashes the database server with <code>Too many connections</code> errors.</li>
+<li><strong>Thread Safety &amp; State Synchronization</strong>: A synchronized Singleton with thread locking (<code>threading.Lock()</code>) prevents race conditions during initialization across concurrent worker threads.</li>
+<li><strong>Centralized Configuration</strong>: Ensures database dialect flags, schema migrations, and connection credentials remain uniform across the entire codebase.</li>
+</ol>
+<hr />
+<h3>2.5 Summary of Gang of Four (GoF) Design Patterns Applied</h3>
+<ul>
+<li><strong>Singleton (Creational)</strong>: Guarantees a class has only one instance and provides a global point of access to it.</li>
+<li><strong>Factory Method (Creational)</strong>: Defines an interface for creating an object, but lets subclasses decide which class to instantiate, promoting loose coupling.</li>
+<li><strong>Composite (Structural)</strong>: Composes objects into tree structures to represent part-whole hierarchies. Enables clients to treat individual objects and compositions uniformly.</li>
+<li><strong>Bridge (Structural)</strong>: Decouples an abstraction from its implementation so that the two can vary independently.</li>
+</ul>
+<hr />
+<h2>3. Implementation: Step-by-Step</h2>
+<h3>Step 1: Understand the Problem Statement</h3>
+<h4>System Overview: StaySync Hospitality Management System</h4>
+<p>StaySync is an enterprise-grade resort and hotel management platform designed to automate guest bookings, check-in/out folios, real-time in-room dining orders, inventory tracking, housekeeping tasks, and executive billing reconciliations.</p>
+<h4>1. Actors:</h4>
+<ul>
+<li><strong>Admin / General Manager</strong>: Full administrative access to hotel KPIs, staff management, and system-wide audits.</li>
+<li><strong>Front Desk Receptionist</strong>: Manages room reservations, performs guest check-in/check-out, and settles guest folio bills.</li>
+<li><strong>Guest</strong>: Views live room folios, requests housekeeping amenities, and orders room service dining from the guest portal.</li>
+<li><strong>Restaurant &amp; Bar Cashier</strong>: Manages food &amp; beverage orders, room billing charges, and kitchen tickets.</li>
+<li><strong>Inventory Manager</strong>: Tracks stock receipts, warehouse adjustments, and spoilage movements.</li>
+<li><strong>Housekeeping Staff</strong>: Tracks room cleanliness states and maintenance repairs.</li>
+</ul>
+<h4>2. Functional Requirements:</h4>
+<ol>
+<li><strong>User Authentication &amp; Role-Based Access Control (RBAC)</strong>: Secure JWT authentication with strict role permissions (<code>admin</code>, <code>receptionist</code>, <code>guest</code>, <code>chef</code>, <code>inventory_manager</code>).</li>
+<li><strong>Room &amp; Reservation Management</strong>: Room booking availability checks, date overlap prevention, and check-in/out workflows.</li>
+<li><strong>Live Folio &amp; Payment Settlement</strong>: Real-time aggregation of room charges, dining tabs, taxes (10% GST), advance deposits, and settlement via Cash, Card, or UPI.</li>
+<li><strong>Restaurant &amp; POS Ordering</strong>: Menu management, order placement, and seamless transfer of dining bills directly to guest room folios.</li>
+<li><strong>Inventory Movement &amp; Spoilage</strong>: Automated stock tracking, restock movements, and prevention of negative inventory.</li>
+<li><strong>Executive Analytics &amp; Reporting</strong>: Real-time dashboard KPI summaries, departmental revenue breakdowns, and CSV data exports.</li>
+</ol>
+<h4>3. Non-Functional Requirements:</h4>
+<ul>
+<li><strong>Performance</strong>: Sub-100ms API response latency for transactional queries.</li>
+<li><strong>Data Integrity (ACID)</strong>: Atomicity in financial billing and stock movements; no double booking or negative stock allowed.</li>
+<li><strong>Scalability &amp; Concurrency</strong>: Thread-safe database connection pooling and asynchronous I/O support.</li>
+<li><strong>Modern UX / Usability</strong>: Clean, responsive, accessible interface with zero browser blocking popups.</li>
+</ul>
+<hr />
+<h3>Step 2: Identify Major Modules</h3>
+<pre><code>+-------------------------------------------------------------------------+
+|                  StaySync Hospitality Management System                 |
++-------------------------------------------------------------------------+
+|  1. User &amp; Auth Module      | Authentication, JWT tokens, RBAC roles   |
+|  2. Reservation Module      | Room bookings, check-in, check-out dates |
+|  3. Restaurant POS Module   | Dining menu, kitchen orders, room tabs   |
+|  4. Inventory Module        | Stock tracking, movements, restock alerts|
+|  5. Billing &amp; Folio Module  | Line items, payments, taxes, invoices    |
+|  6. Analytics &amp; Audit Module| Revenue reconciliation, audit logs       |
++-------------------------------------------------------------------------+
+</code></pre>
+<hr />
+<h3>Step 3: Apply MVC Architecture to StaySync</h3>
+<pre><code>                     +---------------------------------------+
+                     |         VIEW LAYER (React UI)         |
+                     |  - ReservationsPage.tsx               |
+                     |  - BillingPage.tsx                    |
+                     |  - GuestPortal.tsx                    |
+                     |  - Modals, Forms, Luxury Toasts       |
+                     +---------------------------------------+
+                                    ^         |
+                         JSON State |         | User Clicks / Form Submits
+                                    |         v
+                     +---------------------------------------+
+                     |      CONTROLLER LAYER (FastAPI)       |
+                     |  - /api/routes/reservations.py        |
+                     |  - /api/routes/billing.py             |
+                     |  - /api/routes/inventory.py           |
+                     |  - Pydantic DTO Validation            |
+                     +---------------------------------------+
+                                    ^         |
+                       Domain State |         | Invokes Operations
+                                    |         v
+                     +---------------------------------------+
+                     |       MODEL LAYER (Domain Logic)      |
+                     |  - SQLAlchemy Entities (Bill, Room)   |
+                     |  - Business Services (payment_service)|
+                     |  - DatabaseManager (Singleton)        |
+                     +---------------------------------------+
+</code></pre>
+<ol>
+<li><strong>Model Layer</strong>:</li>
+<li><strong>Entities</strong>: <code>Room</code>, <code>Guest</code>, <code>Reservation</code>, <code>Stay</code>, <code>Bill</code>, <code>BillLineItem</code>, <code>Payment</code>, <code>InventoryItem</code>, <code>Order</code>.</li>
+<li><strong>Services</strong>: <code>reservation_service.py</code> (date overlap check), <code>payment_service.py</code> (advance deposit logic), <code>inventory_service.py</code> (stock bounds).</li>
+<li><strong>View Layer</strong>:</li>
+<li>Strictly declarative React components. Uses Tailwind CSS, Lucide icons, in-app toast feedback, and modal components. Does not compute mathematical taxes or execute database queries directly.</li>
+<li><strong>Controller Layer</strong>:</li>
+<li>FastAPI routing functions decorated with <code>@router.post</code>, <code>@router.get</code>. Verifies OAuth2 Bearer JWT tokens, validates inputs using Pydantic schemas, calls the domain Model, and returns HTTP responses.</li>
+</ol>
+<hr />
+<h3>Step 4: Identify &amp; Apply Suitable Design Patterns</h3>
+<p>All 4 design patterns are formally implemented in <a href="file:///C:/Users/Lenovo/Downloads/HotelManagementSystem-main/backend/app/core/design_patterns.py"><code>backend/app/core/design_patterns.py</code></a>.</p>
+<h4>Pattern 1: Singleton Pattern (Database Connection Manager)</h4>
+<ul>
+<li><strong>Problem</strong>: Preventing duplicate database connection engines and resource leaks across threads.</li>
+<li><strong>Implementation</strong>: Double-checked locking singleton ensuring a single <code>DatabaseManager</code> instance.</li>
+</ul>
+<pre><code class="language-python">class DatabaseManager:
+    _instance: Optional[&quot;DatabaseManager&quot;] = None
+    _lock = threading.Lock()
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = super(DatabaseManager, cls).__new__(cls)
+                    cls._instance._initialize()
+        return cls._instance
+
+    def _initialize(self):
+        self.engine = create_engine(settings.DATABASE_URL, future=True)
+        self.session_factory = sessionmaker(bind=self.engine, future=True)
+
+    def get_session(self) -&gt; Session:
+        return self.session_factory()
+</code></pre>
+<hr />
+<h4>Pattern 2: Factory Method Pattern (Payment Processor Factory)</h4>
+<ul>
+<li><strong>Problem</strong>: Decoupling billing logic from specific transaction gateways (Cash, Credit Card, UPI QR).</li>
+<li><strong>Implementation</strong>: <code>PaymentProcessorFactory</code> dynamically returns the appropriate <code>PaymentProcessor</code> subclass without the client code having hardcoded dependencies.</li>
+</ul>
+<pre><code class="language-python">class PaymentProcessor(ABC):
+    @abstractmethod
+    def process_transaction(self, bill_id: int, amount: Decimal, meta: Dict[str, Any]) -&gt; Dict[str, Any]:
+        pass
+
+class CashPaymentProcessor(PaymentProcessor):
+    def process_transaction(self, bill_id: int, amount: Decimal, meta: Dict[str, Any]) -&gt; Dict[str, Any]:
+        tendered = meta.get(&quot;cash_tendered&quot;, amount)
+        return {&quot;status&quot;: &quot;APPROVED&quot;, &quot;method&quot;: &quot;cash&quot;, &quot;amount&quot;: amount, &quot;change_due&quot;: max(Decimal(&quot;0.00&quot;), tendered - amount)}
+
+class CardPaymentProcessor(PaymentProcessor):
+    def process_transaction(self, bill_id: int, amount: Decimal, meta: Dict[str, Any]) -&gt; Dict[str, Any]:
+        return {&quot;status&quot;: &quot;APPROVED&quot;, &quot;method&quot;: &quot;card&quot;, &quot;amount&quot;: amount, &quot;masked_card&quot;: f&quot;****-****-****-{meta.get('card_last_4', '0000')}&quot;}
+
+class UPIPaymentProcessor(PaymentProcessor):
+    def process_transaction(self, bill_id: int, amount: Decimal, meta: Dict[str, Any]) -&gt; Dict[str, Any]:
+        return {&quot;status&quot;: &quot;APPROVED&quot;, &quot;method&quot;: &quot;upi&quot;, &quot;amount&quot;: amount, &quot;vpa&quot;: meta.get(&quot;vpa&quot;, &quot;guest@upi&quot;)}
+
+class PaymentProcessorFactory:
+    _registry = {&quot;cash&quot;: CashPaymentProcessor, &quot;card&quot;: CardPaymentProcessor, &quot;upi&quot;: UPIPaymentProcessor}
+
+    @classmethod
+    def get_processor(cls, payment_method: str) -&gt; PaymentProcessor:
+        cls_ref = cls._registry.get(payment_method.lower().strip())
+        if not cls_ref:
+            raise ValueError(f&quot;Unsupported payment method: {payment_method}&quot;)
+        return cls_ref()
+</code></pre>
+<hr />
+<h4>Pattern 3: Composite Pattern (Hierarchical Billing Folio Components)</h4>
+<ul>
+<li><strong>Problem</strong>: A hotel bill is composed of individual items (room nights, meals) as well as bundled packages (Weekend Stay Package = Room + Buffet Breakfast + Spa) which can be nested arbitrarily.</li>
+<li><strong>Implementation</strong>: <code>BillComponent</code> base class allows <code>LineItem</code> (Leaf) and <code>CompositeBillPackage</code> (Composite) to be treated uniformly.</li>
+</ul>
+<pre class="mermaid">classDiagram
+    class BillComponent {
+        &lt;&lt;abstract&gt;&gt;
+        +get_title() str
+        +get_total_price() Decimal
+        +render_breakdown(indent) str
+    }
+    class LineItem {
+        -title: str
+        -unit_price: Decimal
+        -quantity: int
+        +get_total_price() Decimal
+    }
+    class CompositeBillPackage {
+        -package_name: str
+        -tax_rate_percent: Decimal
+        -children: List~BillComponent~
+        +add(component)
+        +remove(component)
+        +get_total_price() Decimal
+    }
+    BillComponent &lt;|-- LineItem
+    BillComponent &lt;|-- CompositeBillPackage
+    CompositeBillPackage o-- BillComponent : contains
+</code></pre>
+<pre><code class="language-python">class BillComponent(ABC):
+    @abstractmethod
+    def get_total_price(self) -&gt; Decimal: pass
+
+class LineItem(BillComponent):
+    def __init__(self, title: str, unit_price: Decimal, quantity: int = 1):
+        self.title, self.unit_price, self.quantity = title, unit_price, quantity
+
+    def get_total_price(self) -&gt; Decimal:
+        return self.unit_price * Decimal(self.quantity)
+
+class CompositeBillPackage(BillComponent):
+    def __init__(self, package_name: str, tax_rate_percent: Decimal = Decimal(&quot;0.00&quot;)):
+        self.package_name, self.tax_rate_percent = package_name, tax_rate_percent
+        self._children: List[BillComponent] = []
+
+    def add(self, component: BillComponent) -&gt; None:
+        self._children.append(component)
+
+    def get_total_price(self) -&gt; Decimal:
+        subtotal = sum((child.get_total_price() for child in self._children), Decimal(&quot;0.00&quot;))
+        return subtotal + (subtotal * self.tax_rate_percent / Decimal(&quot;100.00&quot;))
+</code></pre>
+<hr />
+<h4>Pattern 4: Bridge Pattern (Decoupled Notification Architecture)</h4>
+<ul>
+<li><strong>Problem</strong>: Decoupling the high-level notification types (<code>BookingConfirmationNotification</code>, <code>PaymentReceiptNotification</code>) from the delivery channel implementations (<code>EmailSender</code>, <code>SMSSender</code>, <code>WhatsAppSender</code>).</li>
+<li><strong>Implementation</strong>: The Abstraction holds a reference to the Implementor (<code>MessageSenderImplementation</code>), allowing notification types and delivery channels to vary independently.</li>
+</ul>
+<pre><code class="language-python">class MessageSenderImplementation(ABC):
+    @abstractmethod
+    def deliver(self, recipient: str, message: str) -&gt; bool: pass
+
+class EmailSender(MessageSenderImplementation):
+    def deliver(self, recipient: str, message: str) -&gt; bool: return True
+
+class WhatsAppSender(MessageSenderImplementation):
+    def deliver(self, recipient: str, message: str) -&gt; bool: return True
+
+class Notification(ABC):
+    def __init__(self, sender: MessageSenderImplementation):
+        self.sender = sender
+    @abstractmethod
+    def notify(self, recipient: str) -&gt; Dict[str, Any]: pass
+
+class BookingConfirmationNotification(Notification):
+    def __init__(self, sender: MessageSenderImplementation, reservation_code: str, guest_name: str, room_num: str):
+        super().__init__(sender)
+        self.code, self.guest, self.room = reservation_code, guest_name, room_num
+
+    def notify(self, recipient: str) -&gt; Dict[str, Any]:
+        msg = f&quot;Dear {self.guest}, reservation {self.code} for Room {self.room} is confirmed!&quot;
+        return {&quot;delivered&quot;: self.sender.deliver(recipient, msg), &quot;channel&quot;: self.sender.__class__.__name__, &quot;message&quot;: msg}
+</code></pre>
+<hr />
+<h3>Step 5: Design Controller Logic</h3>
+<p>Controllers in StaySync live in <a href="file:///C:/Users/Lenovo/Downloads/HotelManagementSystem-main/backend/app/api/routes"><code>backend/app/api/routes/</code></a>.</p>
+<p>Responsibilities:
+1. Receive incoming HTTP request.
+2. Validate payload using Pydantic DTO schema.
+3. Authenticate user &amp; verify RBAC permissions.
+4. Invoke Model service logic.
+5. Return structured HTTP response view.</p>
+<pre><code class="language-python"># Example: Controller in backend/app/api/routes/billing.py
+@router.post(&quot;/{bill_id}/payments&quot;, response_model=PaymentResponse)
+def add_payment(
+    bill_id: int,
+    payload: PaymentCreate,                          # 1. Validates input DTO
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles([&quot;admin&quot;, &quot;receptionist&quot;])) # 2. Enforces RBAC
+):
+    # 3. Calls Model business logic service
+    payment = record_payment(
+        db=db,
+        bill_id=bill_id,
+        amount=payload.amount,
+        payment_method=payload.payment_method,
+        notes=payload.notes,
+        recorded_by_user_id=current_user.id
+    )
+    # 4. Returns formatted View data
+    return payment
+</code></pre>
+<hr />
+<h3>Step 6: Design View Layer</h3>
+<p>Views live in <a href="file:///C:/Users/Lenovo/Downloads/HotelManagementSystem-main/frontend/src/pages"><code>frontend/src/pages/</code></a>.</p>
+<p>Responsibilities:
+1. Render input forms, data tables, and status badges.
+2. Display success/failure in-app luxury toasts.
+3. <strong>Zero business logic</strong>: Never calculates taxes, outstanding balances, or database state locally.</p>
+<pre><code class="language-tsx">// Example: View in frontend/src/pages/billing/BillingPage.tsx
+export const BillingPage: React.FC = () =&gt; {
+  const [bills, setBills] = useState&lt;Bill[]&gt;([]);
+  const [toast, setToast] = useState&lt;{ message: string; type: 'success' | 'error' } | null&gt;(null);
+
+  // Presentational trigger only: delegates action to Controller API
+  const handlePaymentSubmit = async (billId: number, amount: number, method: string) =&gt; {
+    try {
+      const response = await apiClient.post(`/billing/${billId}/payments`, { amount, payment_method: method });
+      setToast({ message: `Payment of ₹${amount} recorded successfully!`, type: 'success' });
+      fetchBills(); // Refreshes view from server state
+    } catch (err: any) {
+      setToast({ message: err.response?.data?.detail || &quot;Payment failed&quot;, type: 'error' });
+    }
+  };
+
+  return (
+    &lt;div className=&quot;p-8&quot;&gt;
+      {toast &amp;&amp; &lt;Toast message={toast.message} type={toast.type} onClose={() =&gt; setToast(null)} /&gt;}
+      &lt;BillTable bills={bills} onPay={handlePaymentSubmit} /&gt;
+    &lt;/div&gt;
+  );
+};
+</code></pre>
+<hr />
+<h2>4. Verification &amp; Testing</h2>
+<p>The complete test suite is implemented in <a href="file:///C:/Users/Lenovo/Downloads/HotelManagementSystem-main/backend/tests/test_design_patterns.py"><code>backend/tests/test_design_patterns.py</code></a>.</p>
+<h3>Execution Command:</h3>
+<pre><code class="language-powershell">python -m pytest backend/tests/test_design_patterns.py -v
+</code></pre>
+<h3>Test Results:</h3>
+<pre><code class="language-text">============================= test session starts =============================
+platform win32 -- Python 3.14.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: C:\Users\Lenovo\Downloads\HotelManagementSystem-main
+collected 6 items
+
+backend/tests/test_design_patterns.py::test_singleton_database_manager_identity PASSED   [ 16%]
+backend/tests/test_design_patterns.py::test_factory_method_creates_correct_processors PASSED [ 33%]
+backend/tests/test_design_patterns.py::test_factory_method_payment_execution PASSED      [ 50%]
+backend/tests/test_design_patterns.py::test_factory_method_invalid_type PASSED           [ 66%]
+backend/tests/test_design_patterns.py::test_composite_billing_hierarchy PASSED           [ 83%]
+backend/tests/test_design_patterns.py::test_bridge_notification_decoupling PASSED        [100%]
+
+============================== 6 passed in 0.12s ==============================
+</code></pre>
+<hr />
+<h2>5. Result</h2>
+<ol>
+<li><strong>MVC Architecture</strong>: Successfully divided the StaySync application into three decoupled layers: SQLAlchemy Models (business rules), React Views (presentation screens), and FastAPI Controllers (request routing &amp; validation).</li>
+<li><strong>Design Patterns</strong>:</li>
+<li><strong>Singleton</strong>: Enforced a single database engine instance across all application threads, preventing socket leaks.</li>
+<li><strong>Factory Method</strong>: Encapsulated dynamic instantiation of Cash, Card, and UPI payment processors.</li>
+<li><strong>Composite</strong>: Handled recursive computation of room charges, dining line items, and nested packages.</li>
+<li><strong>Bridge</strong>: Decoupled domain notification triggers from email, SMS, and WhatsApp delivery channels.</li>
+<li><strong>Automated Verification</strong>: All 6 design pattern unit tests passed with 100% success.</li>
+</ol>
+<hr />
+<h2>6. Conclusion</h2>
+<p>In this experiment, the Model–View–Controller (MVC) architectural pattern was applied to the StaySync Hospitality Management System to achieve clear separation of concerns, high maintainability, and parallel development capability. Furthermore, GoF design patterns—including Singleton, Factory Method, Composite, and Bridge—were implemented and verified through comprehensive unit testing. The resulting architecture ensures robustness, resource efficiency, and seamless extensibility for real-world enterprise deployments.</p>
+</body>
+</html>
