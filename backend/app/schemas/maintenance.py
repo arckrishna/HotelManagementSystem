@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from app.schemas.auth import UserResponse
 from app.schemas.room import RoomResponse
@@ -35,5 +35,4 @@ class MaintenanceResponse(BaseModel):
     reported_by: UserResponse | None = None
     assigned_to: UserResponse | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

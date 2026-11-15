@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from decimal import Decimal
 from datetime import date, datetime
 from app.schemas.guest import GuestResponse
@@ -36,8 +36,7 @@ class ReservationResponse(BaseModel):
     guest: GuestResponse | None = None
     room: RoomResponse | None = None
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class StayCheckInRequest(BaseModel):
     reservation_id: int
@@ -63,5 +62,4 @@ class StayResponse(BaseModel):
     guest: GuestResponse | None = None
     room: RoomResponse | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

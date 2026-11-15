@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from decimal import Decimal
 from datetime import datetime
 
@@ -15,8 +15,7 @@ class RoomCategoryCreate(RoomCategoryBase):
 class RoomCategoryResponse(RoomCategoryBase):
     id: int
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class RoomBase(BaseModel):
     room_number: str
@@ -41,5 +40,4 @@ class RoomResponse(RoomBase):
     created_at: datetime
     category: RoomCategoryResponse | None = None
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from decimal import Decimal
 from datetime import datetime
 from app.schemas.room import RoomResponse
@@ -30,8 +30,7 @@ class MenuItemResponse(MenuItemBase):
     id: int
     created_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class TableBase(BaseModel):
     table_number: str
@@ -44,8 +43,7 @@ class TableCreate(TableBase):
 class TableResponse(TableBase):
     id: int
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class OrderItemCreate(BaseModel):
     menu_item_id: int
@@ -60,8 +58,7 @@ class OrderItemResponse(BaseModel):
     quantity: int
     subtotal: Decimal
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class OrderCreate(BaseModel):
     department: str = "restaurant" # restaurant, bar
@@ -100,5 +97,4 @@ class OrderResponse(BaseModel):
     room: RoomResponse | None = None
     guest: GuestResponse | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

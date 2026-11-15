@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from decimal import Decimal
 from datetime import datetime
 from app.schemas.guest import GuestResponse
@@ -13,8 +13,7 @@ class BillLineItemResponse(BaseModel):
     amount: Decimal
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class PaymentCreate(BaseModel):
     amount: Decimal
@@ -34,8 +33,7 @@ class PaymentResponse(BaseModel):
     created_at: datetime
     recorded_by: UserResponse | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class BillResponse(BaseModel):
     id: int
@@ -59,5 +57,4 @@ class BillResponse(BaseModel):
     line_items: list[BillLineItemResponse] = []
     payments: list[PaymentResponse] = []
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

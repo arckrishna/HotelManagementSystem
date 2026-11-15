@@ -29,3 +29,8 @@ pnpm-debug.log*
 .idea/
 .DS_Store
 Thumbs.db
+
+pricova/
+
+pricova.zip
+expand_report.py
